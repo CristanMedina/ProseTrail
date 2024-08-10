@@ -13,12 +13,12 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("Hola como estas");
+    res.send("Bienvenido");
 });
 
 app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
     connectDB();
-    console.log('Server is running on port:', PORT);
+    console.log('Servidor encendido en puerto:', PORT);
 });
