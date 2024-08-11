@@ -20,5 +20,5 @@ app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
     connectDB();
-    console.log('Servidor encendido en puerto:', PORT);
+    console.log(`Servidor encendido en: localhost:${PORT}`);
 });
