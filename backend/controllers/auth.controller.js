@@ -46,10 +46,10 @@ export const signUp = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(404).json({success: false, message: error.message});
+        res.status(400).json({success: false, message: error.message});
     }
 }
-
+// Logica del verifyEmail
 export const verifyEmail = async (req, res) => {
     const { code } = req.body;
     try {
@@ -59,7 +59,7 @@ export const verifyEmail = async (req, res) => {
         })
 
         if(!user) {
-            return res.status(404).json({success: false, message: "Codigo invalido o vencido"});
+            return res.status(400).json({success: false, message: "Codigo invalido o vencido"});
         }
 
         user.isVerified = true;
@@ -72,10 +72,10 @@ export const verifyEmail = async (req, res) => {
         res.status(200).json({success: true, message: "Correo ha sido verificado con exito", user: { ...user._doc, password: undefined}})
 
     } catch (error) {
-        res.status(404).json({success: false, message: error.message});
+        res.status(400).json({success: false, message: error.message});
     }
 }
-
+// Logica del logIn
 export const logIn = async (req, res) => {
     const { email, password } = req.body;
 
@@ -102,12 +102,12 @@ export const logIn = async (req, res) => {
         return res.status(400).json({success: false, message: error.message});
     }
 }
-
+// Logica del logOut
 export const logOut = async (req, res) => {
     res.clearCookie("token");
     res.status(200).json({success: true, message: "Sesion cerrada con exito"})
 }
-
+// Logica del forgotPassword
 export const forgotPassword = async (req, res) => {
    const { email } = req.body;
    try {
@@ -133,7 +133,7 @@ export const forgotPassword = async (req, res) => {
         return res.status(400).json({success: false, message: error.message});
    }
 }
-
+// Logica del resetPassword
 export const resetPassword = async (req, res) => {
     try {
      const {token} = req.params;
@@ -164,3 +164,17 @@ export const resetPassword = async (req, res) => {
          return res.status(400).json({success: false, message: error.message});
     }
  }
+
+export const checkAuth = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+        if(!user) {
+            return res.status(400).json({success: false, message: "Usuario no encontrado" });
+        }
+
+        res.status(200).json({ success: true, user: { ...user._doc, password: undefined } });
+    } catch (error) {
+        console.error("Error en Check Auth: ",error);
+         return res.status(400).json({success: false, message: error.message});
+    }
+}
