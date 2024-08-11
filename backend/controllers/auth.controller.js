@@ -1,7 +1,7 @@
 import { User } from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 import {generateTokenAndSetCookie} from '../utils/generateTokenAndSetCookie.js';
-import { sendVerificationEmail } from '../mailtrap/emails.js';
+import { sendVerificationEmail, sendWelcomeEmail } from '../mailtrap/emails.js';
 
 // Logica del SignUp
 export const signUp = async (req, res) => {
@@ -48,12 +48,34 @@ export const signUp = async (req, res) => {
     }
 }
 
-export const logIn = async (req, res) => {
-    res.send("Login Route");
+export const verifyEmail = async (req, res) => {
+    const { code } = req.body;
+    try {
+        const user = await User.findOne({
+            verificationToken: code,
+            verificationTokenExpiresAt: { $gt: Date.now() },
+        })
+
+        if(!user) {
+            return res.status(404).json({success: false, message: "Codigo invalido o vencido"});
+        }
+
+        user.isVerified = true;
+        user.verificationToken = undefined;
+        user.verificationTokenExpiresAt = undefined;
+        await user.save();
+
+        await sendWelcomeEmail(user.email, user.name);
+
+        res.status(200).json({success: true, message: "Correo ha sido verificado con exito", user: { ...user._doc, password: undefined}})
+
+    } catch (error) {
+        res.status(404).json({success: false, message: error.message});
+    }
 }
 
-export const signIn = async (req, res) => {
-    res.send("SignIn Route");
+export const logIn = async (req, res) => {
+    res.send("Login Route");
 }
 
 export const logOut = async (req, res) => {
