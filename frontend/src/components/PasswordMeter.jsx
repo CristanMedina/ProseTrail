@@ -54,9 +54,9 @@ const PasswordMeter = ({password}) => {
   return (
     <>
         <div className="mt-2">
-            <div className="flex justify-center items-center mb-1">
-                <span className="text-xs text-gray-400">Nivel de Contraseña</span>
-                <span className="text-xs text-gray-400">{getStrengthText(strength)}</span>
+            <div className="flex justify-center items-center mb-4">
+                <span className="text-xs font-semibold text-gray-800">Nivel de Contraseña: </span>
+                <span className="text-xs font-semibold text-sky-600 ml-1"> {getStrengthText(strength)} </span>
             </div>
             <div className="flex space-x-1">
                 {[...Array(4)].map((_, index) => (

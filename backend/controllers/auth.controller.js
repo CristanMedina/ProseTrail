@@ -82,11 +82,11 @@ export const logIn = async (req, res) => {
     try {
         const user = await User.findOne({email});
         if(!user) {
-            return res.status(400).json({success: false, message: "Credenciales Invalidas"});
+            return res.status(400).json({success: false, message: "Cuenta o Contraseña incorrecta"});
         }
         const isPasswordValid = await bcryptjs.compare(password, user.password);
         if(!isPasswordValid) {
-            return res.status(400).json({success: false, message: "Credenciales Invalidas"});
+            return res.status(400).json({success: false, message: "Cuenta o Contraseña incorrecta"});
         }
 
         generateTokenAndSetCookie(res, user._id);
