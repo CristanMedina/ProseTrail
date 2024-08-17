@@ -11,6 +11,7 @@ export const useAuthStore = create((set) => ({
     error: null,
     isLoading: false,
     isCheckingAuth: true,
+    message: null,
 
     signup: async (email, password, name) => {
         set({ isLoading: true, error: null });
@@ -95,6 +96,28 @@ export const useAuthStore = create((set) => ({
             set({ user: response.data.user, isAuthenticated: true, isCheckingAuth: false, });
         } catch (error) {
             set({ error: null, isCheckingAuth: false, isAuthenticated: false });
+        }
+    },
+
+    forgotPassword: async (email) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.post(`${API_URL}/forgot-password`, { email });
+            set({ message: response.data.message, isLoading: false})
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Error al enviar correo de cambiar contraseña", isLoading: false });
+            throw error;
+        }
+    },
+
+    resetPassword: async (token, password) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.post(`${API_URL}/reset-password/${token}`, { password })
+            set({ message: response.data.message, isLoading: false })
+        } catch (error) {
+            set({ error: error.response?.data?.message || "Error cambiando la contraseña", isLoading: false });
+            throw error;
         }
     }
 }));

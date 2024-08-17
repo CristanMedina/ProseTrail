@@ -11,7 +11,8 @@ import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
-
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 import './App.css'
 
@@ -47,13 +48,13 @@ const RedirectAuthenticatedUser = ({ children }) => {
 
 function App() {
 
-  const { isCheckingAuth, checkAuth, isAuthenticated, user } = useAuthStore();
+  const { isCheckingAuth, checkAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth()
   }, [checkAuth]);
 
-  if(isCheckingAuth) return <LoadingSpinner />
+  if(isCheckingAuth) return <LoadingSpinner/>
 
   return (
     <>
@@ -66,9 +67,7 @@ function App() {
         <Routes>
             <Route 
             path='/' 
-            element={<ProtectedRoute>
-              <ProfilePage/>
-            </ProtectedRoute>}/>
+            element={"home"}/>
 
             <Route 
             path='/profile' 
@@ -97,6 +96,20 @@ function App() {
             <Route 
             path='/verify-email' 
             element={<EmailVerificationPage/>}/>
+
+            <Route 
+            path='/forgot-password' 
+            element={
+              <RedirectAuthenticatedUser>
+                <ForgotPasswordPage/>
+              </RedirectAuthenticatedUser>}/>
+
+            <Route 
+            path='/reset-password/:token' 
+            element={
+              <RedirectAuthenticatedUser>
+                <ResetPasswordPage/>
+              </RedirectAuthenticatedUser>}/>
 
         </Routes>
       </BrowserRouter>
