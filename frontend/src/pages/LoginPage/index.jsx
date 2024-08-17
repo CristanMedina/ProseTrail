@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion';
 import { Mail, Lock, LoaderPinwheel } from 'lucide-react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 import { useAuthStore } from '../../store/authStore';
@@ -13,6 +13,8 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, isLoading, error } = useAuthStore();
+
+  const navigate = useNavigate()
 
   const handleLogin = async (e) => {
     e.preventDefault();

@@ -13,6 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import LandingPage from "./pages/LandingPage";
 
 import './App.css'
 
@@ -67,7 +68,7 @@ function App() {
         <Routes>
             <Route 
             path='/' 
-            element={"home"}/>
+            element={<LandingPage/>}/>
 
             <Route 
             path='/profile' 
