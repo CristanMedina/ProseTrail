@@ -6,6 +6,7 @@ const router = express.Router();
 
 // GET
     router.get('/check-auth', verifyToken, checkAuth);
+    router.get('/profile', verifyToken, profile);
 
 //  POST
     router.post('/signup', signUp);

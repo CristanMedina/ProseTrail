@@ -43,7 +43,7 @@ export const useAuthStore = create((set) => ({
             });
         } catch (error) {
             set({ 
-                error: error.response?.data?.message || "Error al crear cuenta", 
+                error: error.response?.data?.message || "Error al ingresar cuenta", 
                 isLoading: false 
             });
             throw error;

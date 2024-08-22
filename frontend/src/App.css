@@ -1,17 +1,16 @@
 .fondo-patron {
   padding: 0;
   margin: 0;
-  background-color: #fafafa;
+  background: #e8f2f2ff;
   background-image: 
-      linear-gradient(rgba(90, 90, 90, 0.3) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(90, 90, 90, 0.3) 1px, transparent 1px);
+      linear-gradient(rgba(0, 0, 0, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.3) 1px, transparent 1px);
   background-size: 30px 30px;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
   
-  /* Animation */
   animation: moveBackground 15s linear infinite;
 }
 
