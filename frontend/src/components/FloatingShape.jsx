@@ -1,25 +1,28 @@
-import {motion} from "framer-motion"
+import { motion } from "framer-motion";
 
-const FloatingShape = ( {color, size, top, left, delay} ) => {
+const FloatingShape = ({ size, top, left, delay }) => {
   return (
-    <motion.div 
-    className={`absolute rounded-full blur-3xl opacity-40 ${color} ${size}`}
-    style={{top,left}}
-    animate={{
-        y: ["0%", "100%", "0%"],
-        x: ["0%", "100%", "0%"],
-        rotate: [0,360],
-    }}
-    transition={{
-        duration: 15,
-        ease: "linear",
+    <motion.img 
+      src="/dragones.svg" 
+      alt="Floating Dragon with Books" 
+      className={`absolute ${size}`}
+      style={{ top, left }}
+      animate={{
+        y: ["0%", "20%" ,"50%", "0%"],
+        x: ["0%", "5%","35%", "0%"], 
+        scale: [1, 1.05, 1], 
+        rotate: [-2, 2, -2],       
+        opacity: [0.8, 1,0.8],    
+      }}
+      transition={{
+        duration: 10,              
+        ease: "easeInOut",
         repeat: Infinity,
         delay,
-    }}
-
-    aria-hidden="true"
+      }}
+      aria-hidden="true"
     />
-  )
-}
+  );
+};
 
-export default FloatingShape
+export default FloatingShape;

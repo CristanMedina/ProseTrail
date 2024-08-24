@@ -55,7 +55,7 @@ const PasswordMeter = ({password}) => {
     <>
         <div className="mt-2">
             <div className="flex justify-center items-center mb-4">
-                <span className="text-xs font-semibold text-gray-800">Nivel de Contraseña: </span>
+                <span className="text-xs font-semibold text-white opacity-70">Nivel de Contraseña: </span>
                 <span className="text-xs font-semibold text-sky-600 ml-1"> {getStrengthText(strength)} </span>
             </div>
             <div className="flex space-x-1">

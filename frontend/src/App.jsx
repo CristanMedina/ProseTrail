@@ -61,9 +61,7 @@ function App() {
     <>
       <div className="fondo-patron min-h-screen flex items-center justify-center relative overflow-hidden">
         <Suspense fallback={<LoadingSpinner />}>
-          <FloatingShape color= 'bg-[#5900ffff]' size='w-64 h-64' top='-5%' left='10%' delay={0}/>
-          <FloatingShape color= 'bg-[#ff006aff]' size='w-64 h-64' top='60%' left='70%' delay={5}/>
-          <FloatingShape color= 'bg-[#00ffc8ff]' size='w-64 h-64' top='40%' left='-10%' delay={2}/>
+          <FloatingShape size='w-32 h-32' top='60%' left='80%' delay={0}/>
 
         <BrowserRouter>
           <Routes>

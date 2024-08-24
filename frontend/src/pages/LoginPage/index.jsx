@@ -34,10 +34,10 @@ const LoginPage = () => {
     initial={{opacity: 0, y:20}}
     animate={{opacity: 1, y:0}}
     transition={{duration: 0.5}}
-    className="max-w-md w-full bg-slate-300 bg-opacity-20 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden"
+    className="max-w-md w-full bg-[#010101] bg-opacity-90 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden"
     >
       <div className="p-8">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-sky-400 to-sky-500 text-transparent bg-clip-text">
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-500 to-blue-500 text-transparent bg-clip-text">
           Iniciar Sesión
         </h2>
 
@@ -58,14 +58,14 @@ const LoginPage = () => {
           />
 
           <div className="mt-5 px-8 py-4flex justify-center">
-              <Link to={"/forgot-password"} className="text-sm text-sky-500 hover:underline">
+              <Link to={"/forgot-password"} className="text-sm text-blue-500 hover:underline">
               ¿Olvidaste tu contraseña?
               </Link>
           </div>
           { error && <p className="text-white bg-red-400 p-1 rounded-xl font-semibold text-sm text-center">{error}</p> }
 
           <motion.button
-          className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-sky-400 to-sky-500 text-white font-bold rounded-lg shadow-lg hover:from-sky-500 hover:to-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1 focus:ring-offset-slate-100 transition duration-200"
+          className="mt-5 w-full py-3 px-4 bg-blue-500 text-white font-bold rounded-lg shadow-lg border border-black hover:bg-black hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-slate-100 transition duration-200"
           whileHover={{scale:1.02}}
           whileTap={{scale:0.98}}
           type='submit'
@@ -78,7 +78,7 @@ const LoginPage = () => {
       <div className="px-8 py-4 bg-slate-900 bg-opacity-50 flex justify-center">
         <p className="text-sm text-gray-200">
           ¿No estas Registrado? {" "}
-          <Link to={"/signup"} className="text-sky-500 hover:underline">
+          <Link to={"/signup"} className="text-blue-500 hover:underline">
           Crear Cuenta
           </Link>
         </p>
