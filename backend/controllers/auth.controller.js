@@ -3,7 +3,7 @@ import crypto from 'crypto';
 
 import { User } from '../models/user.model.js';
 import {generateTokenAndSetCookie} from '../utils/generateTokenAndSetCookie.js';
-import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from '../mailtrap/emails.js';
+import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail} from '../email/authEmails.js';
 
 // Logica del SignUp
 export const signUp = async (req, res) => {

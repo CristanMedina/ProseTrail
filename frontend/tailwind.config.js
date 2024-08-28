@@ -5,7 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sourceCodePro: ["Source Code Pro", "monospace"],
+        cinzel: ["Cinzel", "serif"],
+        raleway: ["Raleway", "sans-serif"],
+        oswald: ["Oswald", "sans-serif"]
+      }
+    },
     patterns: {
       opacities: {
           100: "1",

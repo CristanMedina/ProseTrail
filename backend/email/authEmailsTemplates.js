@@ -1,5 +1,5 @@
 export const VERIFICATION_EMAIL_TEMPLATE = `
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -13,6 +13,12 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
             margin: 0;
             padding: 0;
         }
+        img {
+            max-width: 210px;
+            height: auto;
+            margin: 0 auto 20px;
+            display: block;
+        }
         .container {
             max-width: 600px;
             margin: 40px auto;
@@ -24,11 +30,11 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
         .header {
             text-align: center;
             padding: 25px 0;
-            background: linear-gradient(90deg, #007bff 0%, #00b4d8 100%);
+            background: #ffc300;
             border-radius: 12px 12px 0 0;
         }
         .header h1 {
-            color: #ffffff;
+            color: black;
             font-size: 30px;
             font-weight: bold;
             margin: 0;
@@ -39,7 +45,7 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
         }
         .content h1 {
             font-size: 28px;
-            color: #007bff;
+            color: black;
             margin-bottom: 20px;
         }
         .content p {
@@ -52,8 +58,8 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
             font-size: 40px;
             font-weight: bold;
             letter-spacing: 6px;
-            color: #007bff;
-            background-color: #eaf4ff;
+            color: #3838fb;
+            background-color: #ffc300;
             padding: 20px;
             border-radius: 10px;
             display: inline-block;
@@ -72,19 +78,20 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
 <body>
     <div class="container">
         <div class="header">
-            <h1>Codigo de Verificación</h1>
+            <h1>Código de Verificación</h1>
         </div>
         <div class="content">
             <h1>Verificación de Correo Electrónico</h1>
+            <img src="cid:dragonesSaludo" alt="Dos Dragones Saludándose">
             <p>¡Hola!</p>
-            <p>Ya casi estas por registrarte en nuestra plataforma. Para completar tu proceso, por favor verifica tu dirección de correo electrónico utilizando el siguiente código:</p>
+            <p>Ya casi estás por registrarte en nuestra plataforma. Para completar tu proceso, por favor verifica tu dirección de correo electrónico utilizando el siguiente código:</p>
             <div id="verification-code" class="verification-code">
                 {verificationCode}
             </div>
             <p>Si no has solicitado esta verificación, puedes ignorar este correo.</p>
         </div>
         <div class="footer">
-            <p>© 2024 Testeador. Todos los derechos reservados.</p>
+            <p>© 2024 Prose Trail. Todos los derechos reservados.</p>
         </div>
     </div>
 </body>
@@ -92,7 +99,7 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
 `
 
 export const WELCOME_EMAIL_TEMPLATE = `
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -117,11 +124,11 @@ export const WELCOME_EMAIL_TEMPLATE = `
         .header {
             text-align: center;
             padding: 25px 0;
-            background: linear-gradient(90deg, #007bff 0%, #00b4d8 100%);
+            background: #ffc300;
             border-radius: 12px 12px 0 0;
         }
         .header h1 {
-            color: #ffffff;
+            color: black;
             font-size: 30px;
             font-weight: bold;
             margin: 0;
@@ -132,7 +139,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
         }
         .content h1 {
             font-size: 28px;
-            color: #007bff;
+            color: black;
             margin-bottom: 20px;
         }
         .content p {
@@ -143,7 +150,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
         }
         .content .email {
             font-weight: bold;
-            color: #007bff;
+            color: #ffc300;
         }
         .footer {
             text-align: center;
@@ -200,7 +207,7 @@ export const RESET_PASSWORD_EMAIL_TEMPLATE = `
         .header {
             text-align: center;
             padding: 25px 0;
-            background: linear-gradient(90deg, #ff4747 0%, #ff0000 100%);
+            background: #ff4747;
             border-radius: 12px 12px 0 0;
         }
         .header h1 {
@@ -292,7 +299,7 @@ export const SUCCESSFUL_RESET_PASSWORD_EMAIL_TEMPLATE = `
         .header {
             text-align: center;
             padding: 25px 0;
-            background: linear-gradient(90deg, #28a745 0%, #218838 100%);
+            background: #28a745;
             border-radius: 12px 12px 0 0;
         }
         .header h1 {
@@ -347,5 +354,4 @@ export const SUCCESSFUL_RESET_PASSWORD_EMAIL_TEMPLATE = `
     </div>
 </body>
 </html>
-
 `

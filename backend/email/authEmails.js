@@ -1,19 +1,23 @@
-import { VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE, RESET_PASSWORD_EMAIL_TEMPLATE, SUCCESSFUL_RESET_PASSWORD_EMAIL_TEMPLATE } from './emailTemplates.js';
-import { mailtrapClient, sender } from "./mailtrap.config.js"
+import { VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE, RESET_PASSWORD_EMAIL_TEMPLATE, SUCCESSFUL_RESET_PASSWORD_EMAIL_TEMPLATE } from './authEmailsTemplates.js';
+import { transporter } from "./nodemailer.config.js"
 
 export const sendVerificationEmail = async (email, verificationToken) => {
-    const recipient = [{email}]
 
     try {
-        const response = await mailtrapClient.send({
-            from: sender,
-            to: recipient,
+        const response = await transporter.sendMail({
+            from: "Prose Trail <prosetrail@gmail.com>",
+            to: email,
             subject: "Verifica tu correo",
             html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
+            attachments: [{
+                filename: 'dragons.png',
+                path: 'backend/img/dragonesSaludo.png',
+                cid: 'dragonesSaludo' // same cid value as in the html img src
+            }],
             category: "Email Verification"
         })
 
-        console.log("Correo enviado con exito", response)
+        console.log("Correo enviado con exito ", response)
         
     } catch (error) {
         console.error(`Error al enviar correo de verificacion `, error)
@@ -22,18 +26,17 @@ export const sendVerificationEmail = async (email, verificationToken) => {
 }
 
 export const sendWelcomeEmail = async (email, name) => {
-    const recipient = [{email}];
 
     try {
-        const response = await mailtrapClient.send({
-            from: sender,
-            to: recipient,
+        const response = await transporter.sendMail({
+            from: "Prose Trail <prosetrail@gmail.com>",
+            to: email,
             subject: `Bienvenido ${name}`,
             html: WELCOME_EMAIL_TEMPLATE.replace("{username}", name).replace("{userEmail}", email),
             category: "Welcome Email"
         });
 
-        console.log("Correo de bienvenida enviado con exito",response);
+        console.log("Correo de bienvenida enviado con exito ",response);
     } catch (error) {
         console.error("Error al enviar correo de bienvenida", error);
         throw new Error(`Error al enviar correo de bienvenida: ${error}`)
@@ -41,16 +44,16 @@ export const sendWelcomeEmail = async (email, name) => {
 }
 
 export const sendPasswordResetEmail = async (email, resetURL) => {
-    const recipient = [{ email }];
 
     try {
-        const response = await mailtrapClient.send({
-            from: sender,
-            to: recipient,
+        const response = await transporter.sendMail({
+            from: "Prose Trail <prosetrail@gmail.com>",
+            to: email,
             subject: 'Reestablecer contraseña',
             html: RESET_PASSWORD_EMAIL_TEMPLATE.replace("{resetLink}", resetURL).replace("{email}", email),
             category: "Password Reset"
-        })
+        });
+        console.log("Correo para reestablecer contraseña enviado con exito ",response);
     } catch (error) {
         console.error("Error al enviar correo de reestablecer contraseña", error);
         throw new Error(`Error al enviar correo de reestablecer contraseña: ${error}`)
@@ -58,12 +61,11 @@ export const sendPasswordResetEmail = async (email, resetURL) => {
 }
 
 export const sendResetSuccessEmail = async (email, name) => {
-    const recipient = [{email}];
 
     try {
-        const response = await mailtrapClient.send({
-            from: sender,
-            to: recipient,
+        const response = await transporter.sendMail({
+            from: "Prose Trail <prosetrail@gmail.com>",
+            to: email,
             subject: 'Nueva contraseña guardada',
             html: SUCCESSFUL_RESET_PASSWORD_EMAIL_TEMPLATE.replace("{username}", name).replace("{userEmail}", email),
             category: "Password Reset"
