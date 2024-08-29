@@ -8,6 +8,7 @@ import path from 'path';
 import { connectDB } from './db/connectDB.js';
 
 import authRoutes from './routes/auth.route.js';
+import writeRoutes from './routes/write.route.js';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/write", writeRoutes);
 
 if(process.env.NODE_ENV === 'production'){
     app.use(express.static(path.join(__dirname, "/frontend/dist")));
@@ -31,5 +33,4 @@ if(process.env.NODE_ENV === 'production'){
 app.listen(PORT, () => {
     connectDB();
     console.log(`Servidor encendido en: http://localhost:${PORT}`);
-    console.log(`Frontend encendido en: http://localhost:5173`);
 });

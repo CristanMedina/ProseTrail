@@ -2,33 +2,31 @@ import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
 
 import { User } from '../models/user.model.js';
-import {generateTokenAndSetCookie} from '../utils/generateTokenAndSetCookie.js';
-import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail} from '../email/authEmails.js';
+import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
+import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from '../email/authEmails.js';
 
-// Logica del SignUp
 export const signUp = async (req, res) => {
-    const {email, password, name} = req.body;
+    const { email, password, name } = req.body;
     try {
-        if(!email || !password || !name) {
-            throw new Error("Todos los campos deben ser llenados.");
+        if (!email || !password || !name) {
+            return res.status(400).json({ success: false, message: "Todos los campos deben ser llenados." });
         }
 
-        const userAlreadyExists = await User.findOne({email});
-        console.log("usuario ya existe: ", userAlreadyExists);
-        if(userAlreadyExists) {
-            return res.status(400).json({success: false, message: "Este correo ya esta registrado."});
+        const userAlreadyExists = await User.findOne({ email });
+        if (userAlreadyExists) {
+            return res.status(400).json({ success: false, message: "Este correo ya está registrado." });
         }
 
         const hashedPassword = await bcryptjs.hash(password, 10);
-        const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+        const verificationToken = crypto.randomInt(100000, 999999).toString(); // More secure random token
 
         const user = new User({
             email,
             password: hashedPassword,
             name,
             verificationToken,
-            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
-        })
+            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+        });
 
         await user.save();
 
@@ -38,28 +36,29 @@ export const signUp = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: 'Usuario creado con exito',
+            message: 'Usuario creado con éxito',
             user: {
                 ...user._doc,
                 password: undefined
             }
-        })
+        });
 
     } catch (error) {
-        res.status(400).json({success: false, message: error.message});
+        console.error("Error en SignUp:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
-}
-// Logica del verifyEmail
+};
+
 export const verifyEmail = async (req, res) => {
     const { code } = req.body;
     try {
         const user = await User.findOne({
             verificationToken: code,
             verificationTokenExpiresAt: { $gt: Date.now() },
-        })
+        });
 
-        if(!user) {
-            return res.status(400).json({success: false, message: "Codigo invalido o vencido"});
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Código inválido o vencido" });
         }
 
         user.isVerified = true;
@@ -69,112 +68,120 @@ export const verifyEmail = async (req, res) => {
 
         await sendWelcomeEmail(user.email, user.name);
 
-        res.status(200).json({success: true, message: "Correo ha sido verificado con exito", user: { ...user._doc, password: undefined}})
+        res.status(200).json({
+            success: true,
+            message: "Correo ha sido verificado con éxito",
+            user: { ...user._doc, password: undefined }
+        });
 
     } catch (error) {
-        res.status(400).json({success: false, message: error.message});
+        console.error("Error en VerifyEmail:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
-}
-// Logica del logIn
+};
+
 export const logIn = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({email});
-        if(!user) {
-            return res.status(400).json({success: false, message: "Cuenta o Contraseña incorrecta"});
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Cuenta o Contraseña incorrecta" });
         }
         const isPasswordValid = await bcryptjs.compare(password, user.password);
-        if(!isPasswordValid) {
-            return res.status(400).json({success: false, message: "Cuenta o Contraseña incorrecta"});
+        if (!isPasswordValid) {
+            return res.status(400).json({ success: false, message: "Cuenta o Contraseña incorrecta" });
         }
 
         generateTokenAndSetCookie(res, user._id);
 
         user.lastLogin = new Date();
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Usuario ingresó con éxito",
+            user: { ...user._doc, password: undefined }
+        });
+
+    } catch (error) {
+        console.error("Error en LogIn:", error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const logOut = async (req, res) => {
+    res.clearCookie("token");
+    res.status(200).json({ success: true, message: "Sesión cerrada con éxito" });
+};
+
+export const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ success: false, message: "No se encontró el usuario" });
+        }
+
+        const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
+
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpiresAt = resetTokenExpiresAt;
 
         await user.save();
 
-        res.status(200).json({success: true, message: "Usuario ingreso con exito", user: {...user._doc, password: undefined}})
+        await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
 
+        res.status(200).json({ success: true, message: "Link para restablecer contraseña enviado con éxito" });
     } catch (error) {
-        console.error("Error en Login: ",error);
-        return res.status(400).json({success: false, message: error.message});
+        console.error("Error en ForgotPassword:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
-}
-// Logica del logOut
-export const logOut = async (req, res) => {
-    res.clearCookie("token");
-    res.status(200).json({success: true, message: "Sesion cerrada con exito"})
-}
-// Logica del forgotPassword
-export const forgotPassword = async (req, res) => {
-   const { email } = req.body;
-   try {
-    const user = await User.findOne({ email });
+};
 
-    if(!user) {
-        return res.status(400).json({success: false, message:"No se encontro el usuario"});
-    }
-
-    const resetToken = crypto.randomBytes(20).toString("hex");
-    const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;
-
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpiresAt = resetTokenExpiresAt;
-
-    await user.save();
-
-    await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
-
-    res.status(200).json({success: true, message: "Link para reestablecer contraseña enviado con exito"});
-   } catch (error) {
-        console.error("Error en olvido Contraseña: ",error);
-        return res.status(400).json({success: false, message: error.message});
-   }
-}
-// Logica del resetPassword
 export const resetPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
     try {
-     const {token} = req.params;
-     const {password} = req.body;
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpiresAt: { $gt: Date.now() },
+        });
 
-     const user = await User.findOne({
-        resetPasswordToken: token,
-        resetPasswordExpiresAt: { $gt: Date.now() },
-     });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Código para restablecer inválido o ya expiró" });
+        }
 
-     if(!user){
-        return res.status(400).json({ success: false, message: "Codigo para reestablecer invalido o ya expiro" });
-     }
-
-     const hashedPassword = await bcryptjs.hash(password,10);
+        const hashedPassword = await bcryptjs.hash(password, 10);
 
         user.password = hashedPassword;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpiresAt = undefined;
 
-    await user.save();
+        await user.save();
 
-    await sendResetSuccessEmail(user.email, user.name);
+        await sendResetSuccessEmail(user.email, user.name);
 
-     res.status(200).json({success: true, message: "Contraseña nueva guardada"});
+        res.status(200).json({ success: true, message: "Contraseña nueva guardada" });
     } catch (error) {
-         console.error("Error en Reestablecer Contraseña: ",error);
-         return res.status(400).json({success: false, message: error.message});
+        console.error("Error en ResetPassword:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
- }
+};
 
 export const checkAuth = async (req, res) => {
     try {
         const user = await User.findById(req.userId);
-        if(!user) {
-            return res.status(400).json({success: false, message: "Usuario no encontrado" });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Usuario no encontrado" });
         }
 
         res.status(200).json({ success: true, user: { ...user._doc, password: undefined } });
     } catch (error) {
-        console.error("Error en Check Auth: ",error);
-         return res.status(400).json({success: false, message: error.message});
+        console.error("Error en CheckAuth:", error);
+        res.status(500).json({ success: false, message: error.message });
     }
-}
+};

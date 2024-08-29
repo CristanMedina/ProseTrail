@@ -22,6 +22,9 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    profilePicture: {
+        type: String
+    },
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
     verificationToken: String,

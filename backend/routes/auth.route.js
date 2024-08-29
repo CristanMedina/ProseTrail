@@ -1,5 +1,6 @@
 import express from "express";
 import { logIn, logOut, signUp, verifyEmail, forgotPassword, resetPassword, checkAuth } from "../controllers/auth.controller.js";
+import { createBook } from "../controllers/bookWriting.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
