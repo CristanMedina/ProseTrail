@@ -11,7 +11,7 @@
   min-width: 320px;
   min-height: 100vh;
   
-  animation: moveBackground 15s linear infinite;
+  animation: moveBackground 10s linear infinite;
 }
 
 @keyframes moveBackground {

@@ -57,7 +57,7 @@ function App() {
     <div className="fondo-patron min-h-screen flex items-center justify-center relative overflow-hidden">
       <Suspense fallback={<LoadingSpinner />}>
         <Router>
-          <TopNavbar />
+            <TopNavbar />
           <FloatingShape size='w-32 h-32' top='60%' left='80%' delay={0} />
 
           <Routes>
