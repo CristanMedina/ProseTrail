@@ -5,14 +5,14 @@ export const createBook = async (req, res) => {
     const { title } = req.body;
 
     if (!req.userId) {
-        return res.status(401).json({ success: false, message: 'User no autenticado' });
+        return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
     }
 
     try {
         const user = await User.findById(req.userId);
 
         if(!user){
-            return res.status(401).json({ success: false, message: 'Usuario no encntrado'});
+            return res.status(401).json({ success: false, message: 'Usuario no encontrado'});
         }
 
         const book = new Book({
@@ -30,11 +30,11 @@ export const createBook = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: 'New book created successfully',
+            message: 'Libro creado con exito',
             book: { ...book._doc },
         });
     } catch (error) {
-        console.error("Error creating book:", error);
+        console.error("Error creando libro:", error);
         res.status(400).json({ success: false, message: error.message });
     }
 };
@@ -52,7 +52,7 @@ export const updateBook = async (req, res) => {
         const book = await Book.findOne({ _id: bookId, author: user.name });
 
         if(!book) {
-            return res.status(401).json({ success: false, message: "Libro no encontrado, o no eres el autor." })
+            return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." })
         };
 
         delete updates._id;
@@ -67,6 +67,8 @@ export const updateBook = async (req, res) => {
             { new: true, runValidators: true, context: 'query' }
         );
 
+        await book.save();
+
         res.status(200).json({
             success: true,
             message: "Libro actualizado con exito",
@@ -75,5 +77,64 @@ export const updateBook = async (req, res) => {
     } catch (error) {
         console.error("Error al actualizar libro: ", error);
         res.status(400).json({ success: false, message:error.message });
+    }
+};
+
+export const publishBook = async (req, res) => {
+    const { bookId } = req.params;
+    
+    if (!req.userId) {
+        return res.status(401).json({ success: false, message: 'User no autenticado' });
+    }
+
+    try {
+        const user = await User.findById(req.userId);
+        const book = await Book.findOneAndUpdate(
+            { _id: bookId, author: user.name},
+            { status: "Terminado" },
+            { new: true }
+        );
+
+        if(!book) {
+            return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." })
+        };
+
+        await book.save();
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Libro publicado con exito",
+            book: { ...book._doc },
+        })
+    } catch (error) {
+        console.error("Error publicando Libro:", error);
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+export const deleteBook = async (req, res) => {
+    const { bookId } = req.params;
+    
+    if (!req.userId) {
+        return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+    }
+
+    try {
+        const user = await User.findById(req.userId);
+        const book = await Book.findOneAndDelete(
+            { _id: bookId, author: user.name},
+        );
+
+        if(!book) {
+            return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." })
+        };
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Libro borrado con exito"
+        })
+    } catch (error) {
+        console.error("Error borrando Libro:", error);
+        res.status(400).json({ success: false, message: error.message });
     }
 };
