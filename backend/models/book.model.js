@@ -4,17 +4,18 @@ const bookSchema = new mongoose.Schema({
     title: {
         type:String,
         required: true,
-        unique: true
+        unique: true,
+        trim: true
     },
     author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        type: String,
         required: true,
+        trim: true
     },
     content:{
         type : String,
         default: ' ',
-        required: true
+        trim: true
     },
     status: {
         type: String,
@@ -24,6 +25,7 @@ const bookSchema = new mongoose.Schema({
     reviews: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review',
+        trim: true
     },
     likes: [
         {
