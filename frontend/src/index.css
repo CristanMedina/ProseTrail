@@ -2,6 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
-    @apply font-raleway
+body {
+  @apply font-raleway;
+}
+
+.editorWrapper {
+  @apply flex flex-col min-h-screen w-1/2 mx-auto p-10;
+}
+
+.menuBar {
+  @apply sticky top-0 min-w-full bg-indigo-50 bg-opacity-50 backdrop-blur-md border rounded-xl shadow-lg border-gray-900 p-2 flex justify-center items-center z-10;
+}
+
+.menuBar button {
+  @apply border-none rounded-xl text-black cursor-pointer text-sm font-sourceCodePro font-bold mr-2 py-2 px-3 transition-colors duration-100;
+}
+
+.menuBar button:hover {
+  @apply bg-blue-200;
+}
+
+.menuBar button.is-active {
+  @apply bg-blue-200 text-violet-600;
+}
+
+.ProseMirror {
+  @apply flex-grow overflow-y-auto shadow-2xl rounded-xl p-8 bg-indigo-50 bg-opacity-50 border border-gray-900 my-6 mx-auto h-full;
+  max-height: calc(100vh - 4rem);
+}
+
+.ProseMirror p {
+  @apply mb-4 font-medium font-raleway text-black;
+}
+
+@media (max-width: 64rem) {
+  .editorWrapper {
+    @apply max-w-full;
+  }
+
+  .ProseMirror {
+    @apply p-4 m-2 h-full;
+  }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, useAnimationControls } from "framer-motion";
-import { Edit, Book, User, X, Menu, LogOut } from "lucide-react";
+import { Book, Edit, LibraryBig, User, X, Menu, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from '../store/authStore';
 
@@ -100,7 +100,7 @@ const TopNavbar = () => {
             }}
           >
             <div className="flex flex-col gap-4">
-              <NavItem icon={<Book size={20} />} text="Biblioteca" />
+              <NavItem icon={<LibraryBig size={20} />} text="Biblioteca" />
               <NavItem icon={<Edit size={20} />} text="Escritura" />
               <NavItem icon={<Book size={20} />} text="Mis Historias" />
             </div>

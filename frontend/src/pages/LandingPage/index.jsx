@@ -113,14 +113,14 @@ const SliderButton = ({ direction, onClick, disabled }) => (
     disabled={disabled}
     className={`absolute top-1/2 transform -translate-y-1/2 ${
       direction === 'left' ? 'left-0' : 'right-0'
-    } bg-white rounded-full p-2 shadow-md ${
-      disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
+    } bg-blue-100 rounded-full p-2 shadow-md ${
+      disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-400'
     }`}
   >
     {direction === 'left' ? (
-      <ChevronLeft className="w-6 h-6 text-blue-600" />
+      <ChevronLeft className="w-6 h-6 text-black" />
     ) : (
-      <ChevronRight className="w-6 h-6 text-blue-600" />
+      <ChevronRight className="w-6 h-6 text-black" />
     )}
   </button>
 );

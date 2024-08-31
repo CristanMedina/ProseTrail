@@ -177,3 +177,7 @@ export const deleteBook = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 };
+
+export const getBooks = async (req, res) => {
+    
+};
