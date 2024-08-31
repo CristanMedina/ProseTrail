@@ -58,6 +58,10 @@ export const verifyEmail = async (req, res) => {
         });
 
         if (!user) {
+            await User.findOneAndDelete({
+                verificationToken: code,
+                isVerified: false,
+            });
             return res.status(400).json({ success: false, message: "Código inválido o vencido" });
         }
 
@@ -85,9 +89,16 @@ export const logIn = async (req, res) => {
 
     try {
         const user = await User.findOne({ email });
+
         if (!user) {
             return res.status(400).json({ success: false, message: "Cuenta o Contraseña incorrecta" });
         }
+
+        if (!user.isVerified && user.verificationTokenExpiresAt < Date.now()) {
+            await User.findByIdAndDelete(user._id);
+            return res.status(400).json({ success: false, message: "Usuario no verificado. Su cuenta ha sido eliminada." });
+        }
+
         const isPasswordValid = await bcryptjs.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(400).json({ success: false, message: "Cuenta o Contraseña incorrecta" });

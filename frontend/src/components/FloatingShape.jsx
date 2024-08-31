@@ -10,9 +10,8 @@ const FloatingShape = ({ size, top, left, delay }) => {
       animate={{
         y: ["0%", "20%" ,"50%", "0%"],
         x: ["0%", "5%","35%", "0%"], 
-        scale: [1, 1.05, 1], 
-        rotate: [-2, 2, -2],       
-        opacity: [0.8, 1,0.8],    
+        scale: [1, 1.05, 1],
+        rotate: [-3, 2, -3],   
       }}
       transition={{
         duration: 10,              

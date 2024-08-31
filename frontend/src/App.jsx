@@ -17,8 +17,8 @@ const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 
 import './App.css';
+import MyBooksPage from "./pages/MyBooksPage";
 
-// PROTEGER RUTAS
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
 
@@ -33,7 +33,6 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// REDIRIGIR CUENTAS AUTENTICADAS
 const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
 
@@ -58,15 +57,23 @@ function App() {
       <Suspense fallback={<LoadingSpinner />}>
         <Router>
             <TopNavbar />
-          <FloatingShape size='w-32 h-32' top='60%' left='80%' delay={0} />
+          <FloatingShape size='w-32 h-32' top='30%' left='80%' delay={0} />
 
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route
-              path="/profile"
+              path="/perfil"
               element={
                 <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mis-Libros"
+              element={
+                <ProtectedRoute>
+                  <MyBooksPage />
                 </ProtectedRoute>
               }
             />
