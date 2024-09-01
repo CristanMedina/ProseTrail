@@ -63,7 +63,7 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route
-              path="/perfil"
+              path="/perfil/:userId"
               element={
                 <ProtectedRoute>
                   <ProfilePage />
@@ -71,7 +71,7 @@ function App() {
               }
             />
             <Route
-              path="/mis-Libros"
+              path="/mis-libros/:userId"
               element={
                 <ProtectedRoute>
                   <MyBooksPage />
@@ -79,7 +79,7 @@ function App() {
               }
             />
             <Route
-              path="/escritura"
+              path="/escritura/:id"
               element={
                 <ProtectedRoute>
                   <EditBookPage />

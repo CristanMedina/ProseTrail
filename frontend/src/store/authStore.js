@@ -119,5 +119,5 @@ export const useAuthStore = create((set) => ({
             set({ error: error.response?.data?.message || "Error cambiando la contraseña", isLoading: false });
             throw error;
         }
-    }
+    },
 }));

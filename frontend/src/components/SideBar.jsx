@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, useAnimationControls } from "framer-motion";
-import { Book, Edit, LibraryBig, User, X, Menu, LogOut } from "lucide-react";
-import { Link } from "react-router-dom";
+import { HomeIcon, SquarePenIcon, LibraryBigIcon, UserIcon, XIcon, MenuIcon, LogOutIcon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from '../store/authStore';
 
 const containerVariants = {
@@ -41,10 +41,16 @@ const itemVariants = {
   },
 };
 
-const TopNavbar = () => {
+const SideBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const containerControls = useAnimationControls();
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Current user:", user);
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -56,11 +62,30 @@ const TopNavbar = () => {
     } else {
       containerControls.start("close");
     }
-  }, [isOpen]);
+  }, [isOpen, containerControls]);
 
   const handleOpenClose = () => {
     setIsOpen(!isOpen);
   };
+
+  const handleProfileNav = () => {
+    console.log("Navigating to profile. User:", user);
+    if (user && user._id) {
+      navigate(`/perfil/${user._id}`);
+    } else {
+      console.error("User ID is not available");
+      navigate('/login');
+    }
+  }
+  const handleWritingNav = () => {
+    console.log("Navigating to writing. User:", user);
+    if (user && user._id) {
+      navigate(`/mis-libros/${user._id}`);
+    } else {
+      console.error("User ID is not available");
+      navigate('/login');
+    }
+  }
 
   return (
     <div>
@@ -76,13 +101,13 @@ const TopNavbar = () => {
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.3 }}
           >
-            {isOpen ? <X size={36} /> : <Menu size={36} />}
+            {isOpen ? <XIcon size={36} /> : <MenuIcon size={36} />}
           </motion.div>
           </button>
           {!isOpen && (
-            <p className="font-cinzel font-bold text-2xl -rotate-90 whitespace-nowrap absolute left-[50%] top-[50%] transform -translate-x-1/2 -translate-y-1/2 text-white">
+            <Link to={`/`} className="font-cinzel font-bold text-2xl -rotate-90 whitespace-nowrap absolute left-[50%] top-[50%] transform -translate-x-1/2 -translate-y-1/2 text-white">
               Prose Trail
-            </p>
+            </Link>
           )}
         </div>
 
@@ -100,14 +125,14 @@ const TopNavbar = () => {
             }}
           >
             <div className="flex flex-col gap-4">
-              <NavItem icon={<LibraryBig size={20} />} text="Biblioteca" />
-              <NavItem icon={<Edit size={20} />} text="Escritura" />
-              <NavItem icon={<Book size={20} />} text="Mis Historias" />
+              <NavItem icon={<HomeIcon size={20} />} text="Inicio" to={'/'}/>
+              <NavItem icon={<LibraryBigIcon size={20} />} text="Biblioteca" />
+              <NavItem icon={<SquarePenIcon size={20} />} text="Escritura" onClick={handleWritingNav} />
             </div>
 
             <div className="flex flex-col gap-4 mb-4">
-              <NavItem icon={<User size={20} />} text="Perfil" />
-              <NavItem icon={<LogOut size={20} />} text="Salir" onClick={handleLogout} />
+              <NavItem icon={<UserIcon size={20} />} text="Perfil" onClick={handleProfileNav} />
+              <NavItem icon={<LogOutIcon size={20} />} text="Salir" onClick={handleLogout} />
             </div>
           </motion.nav>
         )}
@@ -116,7 +141,7 @@ const TopNavbar = () => {
   );
 };
 
-const NavItem = ({ icon, text, onClick }) => (
+const NavItem = ({ icon, text, onClick, to }) => (
   <motion.div
     variants={itemVariants}
     className="flex items-center gap-3 rounded-xl p-3 bg-transparent text-white hover:bg-white hover:text-purple-700 transition duration-200 cursor-pointer"
@@ -124,9 +149,9 @@ const NavItem = ({ icon, text, onClick }) => (
   >
     {icon}
     <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      {onClick ? <button>{text}</button> : <Link>{text}</Link>}
+      {onClick ? <button>{text}</button> : <Link to={to}>{text}</Link>}
     </motion.span>
   </motion.div>
 );
 
-export default TopNavbar;
+export default SideBar;

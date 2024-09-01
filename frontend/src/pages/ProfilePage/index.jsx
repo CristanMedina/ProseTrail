@@ -1,9 +1,8 @@
-import { motion } from 'framer-motion'
+import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/authStore';
 import { formatDate } from '../../utils/date';
 
 const ProfilePage = () => {
-
   const { user, logout } = useAuthStore();
 
   const handleLogout = () => {

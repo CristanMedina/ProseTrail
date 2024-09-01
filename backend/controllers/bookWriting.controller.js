@@ -59,8 +59,8 @@ export const updateBook = async (req, res) => {
     const updates = req.body;
 
     if (!req.userId) {
-        logger.warn('Se intento actualizar un libro sin autenticación');
-        return res.status(401).json({ success: false, message: "Usuario no autenticado" });
+        logger.warn('Attempt to update a book without authentication');
+        return res.status(401).json({ success: false, message: "User not authenticated" });
     }
 
     try {
@@ -68,29 +68,24 @@ export const updateBook = async (req, res) => {
         const book = await Book.findOne({ _id: bookId, author: user.name });
 
         if (!book) {
-            logger.warn(`Ni el Libro ni autor fueron encontrados: ${bookId}`);
-            return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." });
+            logger.warn(`Book or author not found: ${bookId}`);
+            return res.status(404).json({ success: false, message: "Book not found, or you are not the author." });
         };
 
-        delete updates._id;
-        delete updates.author;
-        delete updates.likes;
-        delete updates.reviews;
-        delete updates.publishedDate;
+        const forbiddenUpdates = ['_id', 'author', 'likes', 'reviews', 'publishedDate'];
+        forbiddenUpdates.forEach(field => delete updates[field]);
 
-        const updateBook = await Book.findByIdAndUpdate(
+        const updatedBook = await Book.findByIdAndUpdate(
             bookId,
             { $set: updates },
             { new: true, runValidators: true, context: 'query' }
         );
 
-        await updateBook.save();
-
-        logger.info(`Libro actualizado con exito: ${updateBook._id}`);
-        res.status(200).json({
+        logger.info(`Book successfully updated: ${updatedBook._id}`);
+        return res.status(200).json({
             success: true,
-            message: "Libro actualizado con exito",
-            book: {...updateBook._doc},
+            message: "Book successfully updated",
+            book: updatedBook,
             user: {
                 id: user._id,
                 name: user.name,
@@ -98,10 +93,11 @@ export const updateBook = async (req, res) => {
             }
         });
     } catch (error) {
-        logger.error(`Error actualizando libro: ${error.message}`);
-        res.status(400).json({ success: false, message: error.message });
+        logger.error(`Error updating book: ${error.message}`);
+        return res.status(400).json({ success: false, message: error.message });
     }
 };
+
 
 export const publishBook = async (req, res) => {
     const { bookId } = req.params;
@@ -178,6 +174,54 @@ export const deleteBook = async (req, res) => {
     }
 };
 
-export const getBooks = async (req, res) => {
-    
+export const getUserBooks = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        const userName = user.name;
+
+        const books = await Book.find({ author: userName });
+        res.json({ books });
+    } catch (error) {
+        res.status(500).json({ message: "Error al obtener libros" });
+    }
+};
+
+export const getBookById = async (req, res) => {
+    const { bookId } = req.params;
+
+    if (!req.userId) {
+        logger.warn('Se intentó obtener un libro sin autenticación');
+        return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+    }
+
+    try {
+        const user = await User.findById(req.userId);
+        const book = await Book.findOne({ _id: bookId, author: user.name });
+
+        if (!book) {
+            logger.warn(`Libro no encontrado o usuario no es el autor: ${bookId}`);
+            return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." });
+        }
+
+        logger.info(`Libro obtenido con éxito: ${book._id}`);
+        res.status(200).json({
+            success: true,
+            message: "Libro obtenido con éxito",
+            book: { ...book._doc },
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        logger.error(`Error obteniendo libro: ${error.message}`);
+        res.status(400).json({ success: false, message: error.message });
+    }
 };

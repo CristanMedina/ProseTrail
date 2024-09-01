@@ -18,14 +18,14 @@ export const signUp = async (req, res) => {
         }
 
         const hashedPassword = await bcryptjs.hash(password, 10);
-        const verificationToken = crypto.randomInt(100000, 999999).toString(); // More secure random token
+        const verificationToken = crypto.randomInt(100000, 999999).toString();
 
         const user = new User({
             email,
             password: hashedPassword,
             name,
             verificationToken,
-            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
         });
 
         await user.save();
@@ -136,7 +136,7 @@ export const forgotPassword = async (req, res) => {
         }
 
         const resetToken = crypto.randomBytes(20).toString("hex");
-        const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
+        const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;
 
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpiresAt = resetTokenExpiresAt;
