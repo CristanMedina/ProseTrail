@@ -52,11 +52,12 @@ export const useWriteStore = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await axios.get(`${API_URL}/book/${id}`);
+            const book = response.data.book;
             set({
-                book: response.data.book,
+                book,
                 isLoading: false,
             });
-            return response.data.book.content;
+            return book;
         } catch (error) {
             set({
                 error: error.response?.data?.message || "Error retrieving book",
@@ -65,13 +66,11 @@ export const useWriteStore = create((set) => ({
             throw error;
         }
     },
-    
-
-    updateBook: async (id, content) => {
+    updateBook: async (id, { title, content }) => {
         set({ isLoading: true, error: null });
-        
+    
         try {
-            const response = await axios.post(`${API_URL}/update-book/${id}`, { content });
+            const response = await axios.patch(`${API_URL}/update-book/${id}`, { title, content });
     
             if (response.status === 200) {
                 set({
@@ -91,19 +90,16 @@ export const useWriteStore = create((set) => ({
                 console.error("Network error, please check your connection.");
                 alert("Failed to update the book. Please check your internet connection and try again.");
             } else if (error.response) {
-                // The request was made and the server responded with a status code outside the 2xx range
                 console.error("Server error:", error.response.data.message || error.message);
                 set({
                     error: error.response.data.message || "Error updating book",
                 });
             } else if (error.request) {
-                // The request was made but no response was received
                 console.error("No response received from server:", error.request);
                 set({
                     error: "No response from server. Please try again later.",
                 });
             } else {
-                // Something else happened
                 console.error("Error updating book:", error.message || error);
                 set({
                     error: "An unexpected error occurred while updating the book.",
@@ -113,6 +109,21 @@ export const useWriteStore = create((set) => ({
             throw error;
         }
     },
-    
-    
+    getAllBooks: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.get(`${API_URL}/all-books`);
+            set({
+                books: response.data.books,
+                isLoading: false,
+                message: response.data.message
+            });
+        } catch (error) {
+            set({
+                error: error.response?.data?.message || "Error al cargar libros",
+                isLoading: false
+            });
+            throw error;
+        }
+    }
 }))

@@ -19,6 +19,7 @@ const LandingPage = lazy(() => import("./pages/LandingPage"));
 import './App.css';
 import MyBooksPage from "./pages/MyBooksPage";
 import EditBookPage from "./pages/EditBookPage";
+import LibraryPage from "./pages/LibraryPage";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -84,6 +85,12 @@ function App() {
                 <ProtectedRoute>
                   <EditBookPage />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/biblioteca"
+              element={
+                <LibraryPage/>
               }
             />
             <Route

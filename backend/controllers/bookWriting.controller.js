@@ -225,3 +225,23 @@ export const getBookById = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 };
+
+export const getAllBooks = async (req, res) => {
+    try {
+        const books = await Book.find({ status: 'Terminado' });
+        if(!books){
+            logger.warn(`No se encontraron libros`);
+            return res.status(404).json({ success: false, message: "No se encontraron libros." });
+        }
+        logger.info('Todos los libros publicados fueron obtenidos', books.map(book => book._id));
+        
+        res.status(200).json({
+            success: true,
+            message: "Todos los libros publicados fueron obtenidos",
+            books: books.map(book => ({ ...book._doc }))
+        });
+    } catch (error) {
+        logger.error(`Error al buscar libros: ${error.message}`);
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
