@@ -3,11 +3,13 @@ import { useWriteStore } from '../../store/writeStore';
 import { motion } from "framer-motion";
 import { Book } from 'lucide-react';
 import SliderButton from './SliderButton';
+import { useNavigate } from "react-router-dom";
 
 const RecentBooks = () => {
   const { books, getAllBooks, isLoading, error } = useWriteStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [recentBooks, setRecentBooks] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -22,6 +24,10 @@ const RecentBooks = () => {
       setRecentBooks(latestBooks);
     }
   }, [books]);
+
+  const handleBookClick = (bookId) => {
+    navigate(`/libro/${bookId}`);
+  };
 
   const nextSlide = () => {
     if (currentIndex < recentBooks.length - 3) {
@@ -48,7 +54,7 @@ const RecentBooks = () => {
       <h2 className="text-4xl font-bold text-gray-800 mb-8 text-center font-oswald">Libros Recientes</h2>
       <div className="relative">
         <div className="overflow-hidden">
-          <div 
+          <div
             className="flex transition-transform duration-300 ease-in-out"
             style={{ transform: `translateX(-${currentIndex * 33.33}%)` }}
           >
@@ -58,7 +64,8 @@ const RecentBooks = () => {
                   whileHover={{ scale: 1.05 }}
                   className="bg-white p-6 rounded-lg shadow-md h-full"
                 >
-                  <Book className="w-16 h-16 mb-4 text-blue-600 mx-auto" />
+                  <Book className="w-16 h-16 mb-4 text-blue-600 mx-auto"
+                  onClick={() => handleBookClick(book._id)}/>
                   <h3 className="text-xl font-bold mb-2 text-center">{book.title}</h3>
                   <p className="text-gray-600 text-center">{book.author}</p>
                 </motion.div>
@@ -74,4 +81,3 @@ const RecentBooks = () => {
 };
 
 export default RecentBooks;
-
