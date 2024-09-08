@@ -1,4 +1,5 @@
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import { EditorContent } from '@tiptap/react';
 import MenuBar from '../../components/editBookComponents/MenuBar';
 import TitleInput from '../../components/editBookComponents/TitleInput';
@@ -8,6 +9,15 @@ import useBookEditor from '../../components/editBookComponents/useBookEditor';
 const EditBookPage = () => {
   const { id } = useParams();
   const { title, editor, statusMessage, handleTitleChange } = useBookEditor(id);
+  const location = useLocation();
+
+  useEffect(() => {
+    document.title = `editando | ${title}`;
+
+    return () => {
+      document.title = 'Prose Trail';
+    };
+  }, [title, location]);
 
   return (
     <div className="editorWrapper">

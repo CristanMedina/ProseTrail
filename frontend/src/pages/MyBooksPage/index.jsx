@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import toast from 'react-hot-toast';
 import { motion } from "framer-motion";
 import { NotebookPenIcon, Book, LoaderPinwheel, BookPlus } from "lucide-react";
@@ -13,6 +13,7 @@ const MyBooksPage = () => {
   const { createBook, isLoading, books, getUserBooks } = useWriteStore();
   const { userId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     console.log("User ID: ", userId);
@@ -21,9 +22,17 @@ const MyBooksPage = () => {
     }
   }, [userId, getUserBooks]);
 
+  useEffect(() => {
+    document.title = `mis libros | Prose Trail`;
+
+    return () => {
+      document.title = 'Prose Trail';
+    };
+  }, [location]);
+
   const handleCreate = async (e) => {
     e.preventDefault();
-  
+
     try {
       if (!title.trim()) {
         throw new Error("Title cannot be empty.");
@@ -47,7 +56,7 @@ const MyBooksPage = () => {
         <h1 className="text-2xl font-cinzel pb-6">Mis Libros</h1>
         <Book/>
       </div>
-  
+
       <div className="flex justify-center gap-5">
         <motion.button
           onClick={() => setIsModalOpen(true)}
@@ -58,7 +67,7 @@ const MyBooksPage = () => {
           <BookPlus className="w-8 h-8 mb-2" />
           <span className="font-bold font-sourceCodePro text-lg">Nuevo Libro</span>
         </motion.button>
-  
+
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -95,7 +104,7 @@ const MyBooksPage = () => {
             </motion.button>
           </motion.div>
         </Modal>
-  
+
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8"
           initial={{ opacity: 0 }}

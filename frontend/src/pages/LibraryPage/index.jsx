@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import BookCard from "../../components/BookCard";
 import { useWriteStore } from '../../store/writeStore';
 import { motion } from "framer-motion";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 const LibraryPage = () => {
   const { books, getAllBooks } = useWriteStore();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -22,6 +25,14 @@ const LibraryPage = () => {
 
     loadBooks();
   }, [getAllBooks]);
+
+  useEffect(() => {
+    document.title = `biblioteca | Prose Trail`;
+
+    return () => {
+      document.title = 'Prose Trail';
+    };
+  }, [location]);
 
   const handleBookClick = (bookId) => {
     navigate(`/libro/${bookId}`);
