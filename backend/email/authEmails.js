@@ -12,7 +12,7 @@ export const sendVerificationEmail = async (email, verificationToken) => {
             attachments: [{
                 filename: 'dragons.png',
                 path: 'backend/img/dragonesSaludo.png',
-                cid: 'dragonesSaludo' // same cid value as in the html img src
+                cid: 'dragonesSaludo'
             }],
             category: "Email Verification"
         })

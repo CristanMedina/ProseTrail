@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpenIcon } from 'lucide-react';
-import { formatDate } from '../utils/date';
 
 const BookCard = ({book}) => {
   const navigate = useNavigate();
@@ -20,7 +18,7 @@ const BookCard = ({book}) => {
       <div className="flex flex-col items-center justify-center h-full">
         <h3 className="text-lg font-semibold text-center text-blue-900 p-5">{book.title}</h3>
         <div className='text-xs text-blue-400'>
-          <p> <span className='font-bold'>Creado: </span> 
+          <p> <span className='font-bold'>Creado: </span>
                 {new Date(book.createdAt).toLocaleDateString("es-MX", {
                   year: "numeric",
                   month: "long",
@@ -28,7 +26,7 @@ const BookCard = ({book}) => {
                   })
                 }
           </p>
-          <p> <span className='font-bold'>Ultima actualizacion: </span> 
+          <p> <span className='font-bold'>Ultima actualizacion: </span>
                 {new Date(book.updatedAt).toLocaleDateString("es-MX", {
                   year: "numeric",
                   month: "long",

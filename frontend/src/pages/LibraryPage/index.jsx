@@ -24,7 +24,7 @@ const LibraryPage = () => {
   }, [getAllBooks]);
 
   const handleBookClick = (bookId) => {
-    navigate(`/escritura/${bookId}`);
+    navigate(`/libro/${bookId}`);
   };
 
   if (loading) {

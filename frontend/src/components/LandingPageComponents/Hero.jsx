@@ -14,6 +14,10 @@ const Hero = () => {
         navigate('/login');
         }
     }
+    const handleBibliotecaNav = () => {
+        console.log("Redirigiendo a biblioteca");
+        navigate('/biblioteca');
+    }
 
     return(
         <motion.section
@@ -58,6 +62,7 @@ const Hero = () => {
             className="py-3 px-6 font-bold rounded-full text-lg mr-4 bg-transparent text-blue-600 border-2 border-blue-600 hover:bg-blue-100"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
+            onClick={handleBibliotecaNav}
         >
             BIBLIOTECA
         </motion.button>

@@ -126,7 +126,7 @@ const SideBar = () => {
           >
             <div className="flex flex-col gap-4">
               <NavItem icon={<HomeIcon size={20} />} text="Inicio" to={'/'}/>
-              <NavItem icon={<LibraryBigIcon size={20} />} text="Biblioteca" />
+              <NavItem icon={<LibraryBigIcon size={20} />} text="Biblioteca" to="/biblioteca" />
               <NavItem icon={<SquarePenIcon size={20} />} text="Escritura" onClick={handleWritingNav} />
             </div>
 

@@ -20,6 +20,7 @@ import './App.css';
 import MyBooksPage from "./pages/MyBooksPage";
 import EditBookPage from "./pages/EditBookPage";
 import LibraryPage from "./pages/LibraryPage";
+import BookPage from "./pages/BookPage";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -94,6 +95,10 @@ function App() {
               }
             />
             <Route
+                path="/libro/:bookId"
+                element={<BookPage/>}
+            />
+            <Route
               path="/signup"
               element={
                 <RedirectAuthenticatedUser>
@@ -135,4 +140,3 @@ function App() {
 }
 
 export default App;
-

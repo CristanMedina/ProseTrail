@@ -22,7 +22,7 @@ const useBookEditor = (id) => {
         setContent(book.content);
         setIsLoaded(true);
       } catch (error) {
-        console.error('Failed to load book:', error.response?.data?.message || error.message);
+        console.error('Error al cargar datos de libro:', error.response?.data?.message || error.message);
       }
     };
 
