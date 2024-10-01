@@ -10,7 +10,7 @@ router.patch('/update-book/:bookId', verifyToken, updateBook);
 router.patch('/publish-book/:bookId', verifyToken, publishBook);
 router.delete('/delete-book/:bookId', verifyToken, deleteBook);
 router.get('/user/:userId/books', verifyToken, getUserBooks);
-router.get('/book/:bookId', verifyToken, getBookById);
+router.get('/book/:bookId', getBookById);
 router.get('/all-books', getAllBooks);
 
 export default router;

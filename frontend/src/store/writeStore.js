@@ -13,6 +13,7 @@ export const useWriteStore = create((set) => ({
     error: null,
     isLoading: false,
     isCheckingAuth: true,
+    isAuthor: false,
     message: null,
 
     createBook: async ( title ) => {
@@ -23,7 +24,9 @@ export const useWriteStore = create((set) => ({
                 book: response.data.book,
                 isLoading: false,
                 message: response.data.message
-            })
+            });
+
+            return response.data.book;
         } catch (error) {
             set({
                 error: error.response?.data?.message || "Error al crear libro",
@@ -68,10 +71,10 @@ export const useWriteStore = create((set) => ({
     },
     updateBook: async (id, { title, content }) => {
         set({ isLoading: true, error: null });
-    
+
         try {
             const response = await axios.patch(`${API_URL}/update-book/${id}`, { title, content });
-    
+
             if (response.status === 200) {
                 set({
                     book: response.data.book,
@@ -85,7 +88,7 @@ export const useWriteStore = create((set) => ({
             }
         } catch (error) {
             set({ isLoading: false });
-    
+
             if (error.code === 'ERR_NETWORK') {
                 console.error("Network error, please check your connection.");
                 alert("Failed to update the book. Please check your internet connection and try again.");
@@ -105,8 +108,22 @@ export const useWriteStore = create((set) => ({
                     error: "An unexpected error occurred while updating the book.",
                 });
             }
-    
+
             throw error;
+        }
+    },
+    isAuthor: async (bookId) => {
+        const currentUser = get().user;
+        if (!currentUser) {
+            return false;
+        }
+        try {
+            const response = await axios.get(`${API_URL}/book/${bookId}`);
+            const book = response.data.book;
+            return book.authorId === currentUser._id;
+        } catch (error) {
+            set({ error: "Error checking book author." });
+            return false;
         }
     },
     getAllBooks: async () => {
@@ -122,6 +139,24 @@ export const useWriteStore = create((set) => ({
             set({
                 error: error.response?.data?.message || "Error al cargar libros",
                 isLoading: false
+            });
+            throw error;
+        }
+    },
+    deleteBook: async (bookId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.delete(`${API_URL}/delete-book/${bookId}`);
+            set({
+                isLoading: false,
+                error: null,
+                message: response.data.message
+            });
+            return response.data;
+        } catch (error) {
+            set({
+                error: error.response?.data?.message || "Error al eliminar libro",
+                isLoading: false,
             });
             throw error;
         }

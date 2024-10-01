@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense, lazy } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from "react-hot-toast";
 
@@ -83,9 +83,7 @@ function App() {
             <Route
               path="/escritura/:id"
               element={
-                <ProtectedRoute>
                   <EditBookPage />
-                </ProtectedRoute>
               }
             />
             <Route

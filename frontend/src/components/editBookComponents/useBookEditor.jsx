@@ -7,6 +7,7 @@ import { useWriteStore } from '../../store/writeStore';
 
 const useBookEditor = (id) => {
   const { getBookById, updateBook, isLoading } = useWriteStore();
+  const [book, setBook] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [statusMessage, setStatusMessage] = useState('Up to date');
@@ -17,9 +18,10 @@ const useBookEditor = (id) => {
   useEffect(() => {
     const loadBook = async () => {
       try {
-        const book = await getBookById(id);
-        setTitle(book.title);
-        setContent(book.content);
+        const loadedBook = await getBookById(id);
+        setBook(loadedBook);
+        setTitle(loadedBook.title);
+        setContent(loadedBook.content);
         setIsLoaded(true);
       } catch (error) {
         console.error('Error al cargar datos de libro:', error.response?.data?.message || error.message);
@@ -34,6 +36,7 @@ const useBookEditor = (id) => {
   const debouncedUpdate = useMemo(
     () => debounce((newTitle, newContent) => {
       updateBook(id, { title: newTitle, content: newContent });
+      setBook(prevBook => ({ ...prevBook, title: newTitle, content: newContent }));
     }, 1000),
     [id, updateBook]
   );
@@ -74,6 +77,7 @@ const useBookEditor = (id) => {
   }, [isLoading]);
 
   return {
+    book,
     title,
     editor,
     statusMessage,

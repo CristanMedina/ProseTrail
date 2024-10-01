@@ -59,7 +59,7 @@ const RecentBooks = () => {
             style={{ transform: `translateX(-${currentIndex * 33.33}%)` }}
           >
             {recentBooks.map((book) => (
-              <div key={book.id} className="w-1/3 flex-shrink-0 p-2">
+              <div key={book._id} className="w-1/3 flex-shrink-0 p-2">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   className="bg-white p-6 rounded-lg shadow-md h-full"

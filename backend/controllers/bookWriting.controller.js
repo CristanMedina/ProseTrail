@@ -47,7 +47,7 @@ export const createBook = async (req, res) => {
                 name: user.name,
                 email: user.email
             }
-        });        
+        });
     } catch (error) {
         logger.error(`Error creando libro: ${error.message}`);
         res.status(400).json({ success: false, message: `Error al crear cuento: \n ${error.message}` });
@@ -174,11 +174,12 @@ export const deleteBook = async (req, res) => {
     }
 };
 
+
 export const getUserBooks = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).sort({ createdAt: -1 });
         if (!user) {
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
@@ -195,18 +196,12 @@ export const getUserBooks = async (req, res) => {
 export const getBookById = async (req, res) => {
     const { bookId } = req.params;
 
-    if (!req.userId) {
-        logger.warn('Se intentó obtener un libro sin autenticación');
-        return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
-    }
-
     try {
-        const user = await User.findById(req.userId);
-        const book = await Book.findOne({ _id: bookId, author: user.name });
+        const book = await Book.findOne({ _id: bookId });
 
         if (!book) {
             logger.warn(`Libro no encontrado o usuario no es el autor: ${bookId}`);
-            return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." });
+            return res.status(404).json({ success: false, message: "Libro no encontrado." });
         }
 
         logger.info(`Libro obtenido con éxito: ${book._id}`);
@@ -214,11 +209,6 @@ export const getBookById = async (req, res) => {
             success: true,
             message: "Libro obtenido con éxito",
             book: { ...book._doc },
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email
-            }
         });
     } catch (error) {
         logger.error(`Error obteniendo libro: ${error.message}`);
@@ -234,7 +224,7 @@ export const getAllBooks = async (req, res) => {
             return res.status(404).json({ success: false, message: "No se encontraron libros." });
         }
         logger.info('Todos los libros publicados fueron obtenidos', books.map(book => book._id));
-        
+
         res.status(200).json({
             success: true,
             message: "Todos los libros publicados fueron obtenidos",
