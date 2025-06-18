@@ -160,5 +160,5 @@ export const useWriteStore = create((set) => ({
             });
             throw error;
         }
-    }
+    },
 }))
