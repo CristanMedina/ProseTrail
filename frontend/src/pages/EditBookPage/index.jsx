@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { EditorContent } from '@tiptap/react';
+import { toast } from 'react-hot-toast';
 import MenuBar from '../../components/editBookComponents/MenuBar';
 import TitleInput from '../../components/editBookComponents/TitleInput';
 import StatusMessage from '../../components/editBookComponents/StatusMessage';
 import useBookEditor from '../../components/editBookComponents/useBookEditor';
 import DeleteBookButton from '../../components/editBookComponents/DeleteBookButton';
+import TogglePublishButton from '../../components/editBookComponents/TogglePublishButton';
 import { useWriteStore } from '../../store/writeStore';
 
 const EditBookPage = () => {
   const { id } = useParams();
-  const { getBookById } = useWriteStore();
+  const { getBookById, publishBook } = useWriteStore();
   const [book, setBook] = useState(null);
   const { title, editor, statusMessage, handleTitleChange } = useBookEditor(id);
   const location = useLocation();
@@ -36,13 +38,17 @@ const EditBookPage = () => {
   return (
     <div className="editorWrapper">
       <div className="flex flex-col space-y-4">
+
         <div className='flex align-middle justify-between mt-6'>
             {book && <DeleteBookButton book={book} />}
+            {book && <TogglePublishButton book={book} onStatusChange={setBook} />}
             <StatusMessage message={statusMessage} />
         </div>
+
         <TitleInput title={title} onChange={handleTitleChange} />
         <MenuBar editor={editor} />
         <EditorContent editor={editor} />
+
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ const TitleInput = ({ title, onChange }) => (
             value={title}
             onChange={onChange}
             className="titleInput"
-            placeholder="Enter book title"
+            placeholder="Escribe el titulo..."
         />
     </>
 );
