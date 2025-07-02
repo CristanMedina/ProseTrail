@@ -7,6 +7,7 @@ import TitleInput from '../../components/editBookComponents/TitleInput';
 import StatusMessage from '../../components/editBookComponents/StatusMessage';
 import useBookEditor from '../../components/editBookComponents/useBookEditor';
 import DeleteBookButton from '../../components/editBookComponents/DeleteBookButton';
+import TogglePublishButton from '../../components/editBookComponents/TogglePublishButton';
 import { useWriteStore } from '../../store/writeStore';
 
 const EditBookPage = () => {
@@ -15,17 +16,6 @@ const EditBookPage = () => {
   const [book, setBook] = useState(null);
   const { title, editor, statusMessage, handleTitleChange } = useBookEditor(id);
   const location = useLocation();
-
-  const handlePublish = async () => {
-  try {
-    const published = await publishBook(book._id);
-    toast.success("Libro publicado con éxito");
-    setBook(published);
-  } catch (error) {
-    toast.error("Error al publicar el libro");
-    console.error("Error publishing book:", error);
-  }
-};
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -51,16 +41,7 @@ const EditBookPage = () => {
 
         <div className='flex align-middle justify-between mt-6'>
             {book && <DeleteBookButton book={book} />}
-            {book &&
-                (<motion.button
-                    onClick={handlePublish}
-                    className="mb-2 p-3 rounded-3xl font-semibold text-teal-700 bg-teal-200 hover:bg-teal-400 hover:text-teal-50 transition duration-200"
-                    whileTap={{ scale: 0.95 }}
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                    >
-                    Publicar
-                    </motion.button>)}
+            {book && <TogglePublishButton book={book} onStatusChange={setBook} />}
             <StatusMessage message={statusMessage} />
         </div>
 

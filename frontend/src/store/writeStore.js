@@ -72,11 +72,11 @@ export const useWriteStore = create((set) => ({
         }
     },
 
-    updateBook: async (id, { title, content }) => {
+    updateBook: async (id, updates) => {
         set({ isLoading: true, error: null });
 
         try {
-            const response = await axios.patch(`${API_URL}/update-book/${id}`, { title, content });
+            const response = await axios.patch(`${API_URL}/update-book/${id}`, updates);
 
             if (response.status === 200) {
                 set({
@@ -85,6 +85,7 @@ export const useWriteStore = create((set) => ({
                     message: "Book updated successfully",
                 });
                 console.log("Book updated successfully:", response.data.book);
+                return response.data.book; // 🔁 DEVUELVE el libro actualizado
             } else {
                 console.warn("Unexpected response status:", response.status);
                 set({ isLoading: false });
