@@ -74,7 +74,7 @@ const MyBooksPage = () => {
               onClick={() => handleBookClick(book._id)}
               className="cursor-pointer"
             >
-              <BookCard book={book} />
+              <BookCard book={book} onClick={() => handleBookClick(book._id)} />
             </motion.div>
           ))}
         </motion.div>
