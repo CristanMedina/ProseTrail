@@ -100,43 +100,49 @@ export const updateBook = async (req, res) => {
 
 
 export const publishBook = async (req, res) => {
-    const { bookId } = req.params;
+  const { bookId } = req.params;
 
-    if (!req.userId) {
-        logger.warn('Se intento publicar un libro sin autenticación');
-        return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+  if (!req.userId) {
+    logger.warn('Se intentó publicar un libro sin autenticación');
+    return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+  }
+
+  try {
+    const user = await User.findById(req.userId);
+    const book = await Book.findOne({ _id: bookId, author: user.name });
+
+    if (!book) {
+      logger.warn(`Ni el Libro ni autor fueron encontrados: ${bookId}`);
+      return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." });
     }
 
-    try {
-        const user = await User.findById(req.userId);
-        const book = await Book.findOneAndUpdate(
-            { _id: bookId, author: user.name },
-            { status: "Terminado" },
-            { new: true }
-        );
+    // Solo establece la fecha si aún no existe
+    const updates = {
+      status: "Terminado"
+    };
 
-        if (!book) {
-            logger.warn(`Ni el Libro ni autor fueron encontrados: ${bookId}`);
-            return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." });
-        }
-
-        await book.save();
-
-        logger.info(`Libro publicado con exito: ${book._id}`);
-        res.status(200).json({
-            success: true,
-            message: "Libro publicado con exito",
-            book: { ...book._doc },
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email
-            }
-        });
-    } catch (error) {
-        logger.error(`Error publicando libro: ${error.message}`);
-        res.status(400).json({ success: false, message: error.message });
+    if (!book.publishedDate) {
+      updates.publishedDate = new Date();
     }
+
+    const updatedBook = await Book.findByIdAndUpdate(bookId, updates, { new: true });
+
+    logger.info(`Libro publicado con éxito: ${updatedBook._id}`);
+    return res.status(200).json({
+      success: true,
+      message: "Libro publicado con éxito",
+      book: { ...updatedBook._doc },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+
+  } catch (error) {
+    logger.error(`Error publicando libro: ${error.message}`);
+    return res.status(400).json({ success: false, message: error.message });
+  }
 };
 
 export const deleteBook = async (req, res) => {

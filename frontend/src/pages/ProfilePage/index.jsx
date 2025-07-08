@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from '../../store/authStore';
 import { formatDate } from '../../utils/date';
 import { LogOut, Mail, Calendar, Clock } from 'lucide-react';
@@ -9,6 +10,8 @@ import { useWriteStore } from '../../store/writeStore';
 const ProfilePage = () => {
   const { user, logout } = useAuthStore();
   const { books, getUserBooks } = useWriteStore();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user?._id) {
@@ -84,7 +87,7 @@ const ProfilePage = () => {
         {Array.isArray(books) && books.length > 0 ? (
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             {books.map((book) => (
-              <BookCard key={book._id} book={book} />
+              <BookCard book={book} onClick={() => navigate(`/escritura/${book._id}`)} />
             ))}
           </div>
         ) : (
@@ -106,7 +109,7 @@ const ProfilePage = () => {
           onClick={handleLogout}
         >
           <LogOut size={18} /> Cerrar Sesión
-        </motion.button>  
+        </motion.button>
       </motion.div>
     </motion.div>
   );
