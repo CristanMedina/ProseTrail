@@ -116,7 +116,6 @@ export const publishBook = async (req, res) => {
       return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." });
     }
 
-    // Solo establece la fecha si aún no existe
     const updates = {
       status: "Terminado"
     };

@@ -25,11 +25,14 @@ const LibraryPage = () => {
     navigate(`/libro/${bookId}`);
   };
 
-  const filteredBooks = books?.filter(
-    book =>
-      book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredBooks = books?.filter(book => {
+  const search = searchTerm.toLowerCase();
+  const inTitle = book.title.toLowerCase().includes(search);
+  const inAuthor = book.author.toLowerCase().includes(search);
+  const inGenres = book.genres?.some(genre => genre.toLowerCase().includes(search));
+  return inTitle || inAuthor || inGenres;
+}) || [];
+
 
   if (loading) return <LoadingSpinner />;
 
