@@ -53,23 +53,27 @@ export const useWriteStore = create((set) => ({
         }
     },
 
-    getBookById: async (id) => {
-        set({ isLoading: true, error: null });
-        try {
-            const response = await axios.get(`${API_URL}/book/${id}`);
-            const book = response.data.book;
-            set({
-                book,
-                isLoading: false,
-            });
-            return book;
-        } catch (error) {
-            set({
-                error: error.response?.data?.message || "Error retrieving book",
-                isLoading: false,
-            });
-            throw error;
-        }
+    getBookById: async (id, options = {}) => {
+    set({ isLoading: true, error: null });
+
+    const params = new URLSearchParams(options).toString();
+    const url = `${API_URL}/book/${id}${params ? `?${params}` : ''}`;
+
+    try {
+        const response = await axios.get(url);
+        const book = response.data.book;
+        set({
+        book,
+        isLoading: false,
+        });
+        return book;
+    } catch (error) {
+        set({
+        error: error.response?.data?.message || "Error retrieving book",
+        isLoading: false,
+        });
+        throw error;
+    }
     },
 
     updateBook: async (id, updates) => {

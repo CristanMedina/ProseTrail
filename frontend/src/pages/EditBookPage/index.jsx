@@ -1,5 +1,3 @@
-// src/pages/EditBookPage.jsx
-
 import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { EditorContent } from '@tiptap/react';
@@ -26,7 +24,7 @@ const EditBookPage = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const fetchedBook = await getBookById(id);
+        const fetchedBook = await getBookById(id, { asAuthor: true });
         setBook(fetchedBook);
       } catch (error) {
         console.error("Error fetching book:", error);
@@ -43,13 +41,19 @@ const EditBookPage = () => {
   }, [id, title, location, getBookById]);
 
   const refreshBook = async () => {
-    const updated = await getBookById(id);
+    const updated = await getBookById(id, { asAuthor: true });
     setBook(updated);
   };
 
   return (
     <div className="editorWrapper">
       <div className="flex flex-col space-y-4">
+
+        {book && (
+          <p className="text-sm text-gray-500 text-right">
+            Visualizaciones: <span className="font-semibold">{book.views || 0}</span>
+          </p>
+        )}
 
         <div className='flex items-center justify-between mt-6'>
           {book && <DeleteBookButton book={book} />}

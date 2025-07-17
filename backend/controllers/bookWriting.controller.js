@@ -198,28 +198,60 @@ export const getUserBooks = async (req, res) => {
     }
 };
 
+
+const recentViews = new Map();
+
 export const getBookById = async (req, res) => {
-    const { bookId } = req.params;
+  const { bookId } = req.params;
+  const userId = req.userId;
+  const ip = req.ip;
 
-    try {
-        const book = await Book.findOne({ _id: bookId });
+  try {
+    const book = await Book.findById(bookId);
 
-        if (!book) {
-            logger.warn(`Libro no encontrado o usuario no es el autor: ${bookId}`);
-            return res.status(404).json({ success: false, message: "Libro no encontrado." });
-        }
-
-        logger.info(`Libro obtenido con éxito: ${book._id}`);
-        res.status(200).json({
-            success: true,
-            message: "Libro obtenido con éxito",
-            book: { ...book._doc },
-        });
-    } catch (error) {
-        logger.error(`Error obteniendo libro: ${error.message}`);
-        res.status(400).json({ success: false, message: error.message });
+    if (!book) {
+      logger.warn(`Libro no encontrado: ${bookId}`);
+      return res.status(404).json({ success: false, message: "Libro no encontrado." });
     }
+
+    let isAuthor = false;
+    if (userId) {
+      const user = await User.findById(userId);
+      if (user && user.name === book.author) {
+        isAuthor = true;
+      }
+    }
+
+    if (!isAuthor) {
+      const key = `${userId || ip}_${bookId}`;
+      const now = Date.now();
+      const lastView = recentViews.get(key) || 0;
+
+      if (now - lastView > 5 * 60 * 1000) {
+        await Book.findByIdAndUpdate(bookId, { $inc: { views: 1 } });
+        book.views = (book.views || 0) + 1;
+        recentViews.set(key, now);
+        logger.info(`Vista registrada para libro: ${bookId} por ${userId || ip}`);
+      } else {
+        logger.info(`Vista NO registrada (demasiado pronto) para libro: ${bookId} por ${userId || ip}`);
+      }
+    } else {
+      logger.info(`El autor accedió al libro: ${bookId}`);
+    }
+
+    logger.info(`Libro obtenido con éxito: ${book._id}`);
+    return res.status(200).json({
+      success: true,
+      message: "Libro obtenido con éxito",
+      book: { ...book._doc },
+    });
+  } catch (error) {
+    logger.error(`Error obteniendo libro: ${error.message}`);
+    return res.status(400).json({ success: false, message: error.message });
+  }
 };
+
+
 
 export const getAllBooks = async (req, res) => {
     try {
