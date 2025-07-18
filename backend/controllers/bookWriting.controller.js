@@ -1,5 +1,7 @@
 import { Book } from "../models/book.model.js";
 import { User } from '../models/user.model.js';
+import fs from "fs";
+import path from "path";
 import logger from '../utils/logger.js';
 
 export const createBook = async (req, res) => {
@@ -272,3 +274,39 @@ export const getAllBooks = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const uploadCoverImage = async (req, res) => {
+  const { bookId } = req.params;
+
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: "No se proporcionó ninguna imagen" });
+  }
+
+  try {
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({ success: false, message: "Libro no encontrado" });
+    }
+
+    if (book.coverImage) {
+      const oldImagePath = path.join("public", "covers", book.coverImage);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+    }
+
+    book.coverImage = req.file.filename;
+
+    await book.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Portada actualizada correctamente",
+      coverImage: book.coverImage,
+      book,
+    });
+  } catch (error) {
+    console.error("Error al subir portada:", error);
+    res.status(500).json({ success: false, message: "Error al subir la portada" });
+  }
+};
