@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { EditorContent } from '@tiptap/react';
 import { toast } from 'react-hot-toast';
+
 import MenuBar from '../../components/editBookComponents/MenuBar';
 import TitleInput from '../../components/editBookComponents/TitleInput';
 import StatusMessage from '../../components/editBookComponents/StatusMessage';
@@ -9,6 +10,8 @@ import useBookEditor from '../../components/editBookComponents/useBookEditor';
 import DeleteBookButton from '../../components/editBookComponents/DeleteBookButton';
 import TogglePublishButton from '../../components/editBookComponents/TogglePublishButton';
 import GenreEditorModal from '../../components/editBookComponents/GenreEditorModal';
+import CoverUploadModal from '../../components/editBookComponents/CoverUploadModal';
+
 import { useWriteStore } from '../../store/writeStore';
 
 const EditBookPage = () => {
@@ -18,6 +21,7 @@ const EditBookPage = () => {
 
   const [book, setBook] = useState(null);
   const [isGenreModalOpen, setIsGenreModalOpen] = useState(false);
+  const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
 
   const { title, editor, statusMessage, handleTitleChange } = useBookEditor(id);
 
@@ -70,26 +74,44 @@ const EditBookPage = () => {
         )}
 
         {book && (
-          <button
-            onClick={() => setIsGenreModalOpen(true)}
-            className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition duration-200 font-semibold w-fit"
-          >
-            Editar Géneros
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsGenreModalOpen(true)}
+              className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition duration-200 font-semibold w-fit"
+            >
+              Editar Géneros
+            </button>
+
+            <button
+              onClick={() => setIsCoverModalOpen(true)}
+              className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition duration-200 font-semibold w-fit"
+            >
+              Cambiar Portada
+            </button>
+          </div>
         )}
 
         <MenuBar editor={editor} />
         <EditorContent editor={editor} />
 
         {book && (
-          <GenreEditorModal
-            book={book}
-            isOpen={isGenreModalOpen}
-            onClose={() => {
-              setIsGenreModalOpen(false);
-              refreshBook();
-            }}
-          />
+          <>
+            <GenreEditorModal
+              book={book}
+              isOpen={isGenreModalOpen}
+              onClose={() => {
+                setIsGenreModalOpen(false);
+                refreshBook();
+              }}
+            />
+
+            <CoverUploadModal
+              bookId={book._id}
+              isOpen={isCoverModalOpen}
+              onClose={() => setIsCoverModalOpen(false)}
+              onUploaded={refreshBook}
+            />
+          </>
         )}
       </div>
     </div>
