@@ -33,6 +33,11 @@ const bookSchema = new mongoose.Schema({
             ref: 'User'
         }
     ],
+    views: {
+        type: Number,
+        default: 0
+    },
+    
     description: String,
     genres: [String],
     coverImage: String,

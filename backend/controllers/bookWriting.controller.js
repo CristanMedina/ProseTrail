@@ -1,5 +1,7 @@
 import { Book } from "../models/book.model.js";
 import { User } from '../models/user.model.js';
+import fs from "fs";
+import path from "path";
 import logger from '../utils/logger.js';
 
 export const createBook = async (req, res) => {
@@ -100,43 +102,48 @@ export const updateBook = async (req, res) => {
 
 
 export const publishBook = async (req, res) => {
-    const { bookId } = req.params;
+  const { bookId } = req.params;
 
-    if (!req.userId) {
-        logger.warn('Se intento publicar un libro sin autenticación');
-        return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+  if (!req.userId) {
+    logger.warn('Se intentó publicar un libro sin autenticación');
+    return res.status(401).json({ success: false, message: 'Usuario no autenticado' });
+  }
+
+  try {
+    const user = await User.findById(req.userId);
+    const book = await Book.findOne({ _id: bookId, author: user.name });
+
+    if (!book) {
+      logger.warn(`Ni el Libro ni autor fueron encontrados: ${bookId}`);
+      return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." });
     }
 
-    try {
-        const user = await User.findById(req.userId);
-        const book = await Book.findOneAndUpdate(
-            { _id: bookId, author: user.name },
-            { status: "Terminado" },
-            { new: true }
-        );
+    const updates = {
+      status: "Terminado"
+    };
 
-        if (!book) {
-            logger.warn(`Ni el Libro ni autor fueron encontrados: ${bookId}`);
-            return res.status(404).json({ success: false, message: "Libro no encontrado, o no eres el autor." });
-        }
-
-        await book.save();
-
-        logger.info(`Libro publicado con exito: ${book._id}`);
-        res.status(200).json({
-            success: true,
-            message: "Libro publicado con exito",
-            book: { ...book._doc },
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email
-            }
-        });
-    } catch (error) {
-        logger.error(`Error publicando libro: ${error.message}`);
-        res.status(400).json({ success: false, message: error.message });
+    if (!book.publishedDate) {
+      updates.publishedDate = new Date();
     }
+
+    const updatedBook = await Book.findByIdAndUpdate(bookId, updates, { new: true });
+
+    logger.info(`Libro publicado con éxito: ${updatedBook._id}`);
+    return res.status(200).json({
+      success: true,
+      message: "Libro publicado con éxito",
+      book: { ...updatedBook._doc },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+
+  } catch (error) {
+    logger.error(`Error publicando libro: ${error.message}`);
+    return res.status(400).json({ success: false, message: error.message });
+  }
 };
 
 export const deleteBook = async (req, res) => {
@@ -193,28 +200,60 @@ export const getUserBooks = async (req, res) => {
     }
 };
 
+
+const recentViews = new Map();
+
 export const getBookById = async (req, res) => {
-    const { bookId } = req.params;
+  const { bookId } = req.params;
+  const userId = req.userId;
+  const ip = req.ip;
 
-    try {
-        const book = await Book.findOne({ _id: bookId });
+  try {
+    const book = await Book.findById(bookId);
 
-        if (!book) {
-            logger.warn(`Libro no encontrado o usuario no es el autor: ${bookId}`);
-            return res.status(404).json({ success: false, message: "Libro no encontrado." });
-        }
-
-        logger.info(`Libro obtenido con éxito: ${book._id}`);
-        res.status(200).json({
-            success: true,
-            message: "Libro obtenido con éxito",
-            book: { ...book._doc },
-        });
-    } catch (error) {
-        logger.error(`Error obteniendo libro: ${error.message}`);
-        res.status(400).json({ success: false, message: error.message });
+    if (!book) {
+      logger.warn(`Libro no encontrado: ${bookId}`);
+      return res.status(404).json({ success: false, message: "Libro no encontrado." });
     }
+
+    let isAuthor = false;
+    if (userId) {
+      const user = await User.findById(userId);
+      if (user && user.name === book.author) {
+        isAuthor = true;
+      }
+    }
+
+    if (!isAuthor) {
+      const key = `${userId || ip}_${bookId}`;
+      const now = Date.now();
+      const lastView = recentViews.get(key) || 0;
+
+      if (now - lastView > 5 * 60 * 1000) {
+        await Book.findByIdAndUpdate(bookId, { $inc: { views: 1 } });
+        book.views = (book.views || 0) + 1;
+        recentViews.set(key, now);
+        logger.info(`Vista registrada para libro: ${bookId} por ${userId || ip}`);
+      } else {
+        logger.info(`Vista NO registrada (demasiado pronto) para libro: ${bookId} por ${userId || ip}`);
+      }
+    } else {
+      logger.info(`El autor accedió al libro: ${bookId}`);
+    }
+
+    logger.info(`Libro obtenido con éxito: ${book._id}`);
+    return res.status(200).json({
+      success: true,
+      message: "Libro obtenido con éxito",
+      book: { ...book._doc },
+    });
+  } catch (error) {
+    logger.error(`Error obteniendo libro: ${error.message}`);
+    return res.status(400).json({ success: false, message: error.message });
+  }
 };
+
+
 
 export const getAllBooks = async (req, res) => {
     try {
@@ -235,3 +274,39 @@ export const getAllBooks = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 }
+
+export const uploadCoverImage = async (req, res) => {
+  const { bookId } = req.params;
+
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: "No se proporcionó ninguna imagen" });
+  }
+
+  try {
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({ success: false, message: "Libro no encontrado" });
+    }
+
+    if (book.coverImage) {
+      const oldImagePath = path.join("public", "covers", book.coverImage);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+    }
+
+    book.coverImage = req.file.filename;
+
+    await book.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Portada actualizada correctamente",
+      coverImage: book.coverImage,
+      book,
+    });
+  } catch (error) {
+    console.error("Error al subir portada:", error);
+    res.status(500).json({ success: false, message: "Error al subir la portada" });
+  }
+};

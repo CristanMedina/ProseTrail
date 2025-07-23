@@ -141,17 +141,34 @@ const SideBar = () => {
   );
 };
 
-const NavItem = ({ icon, text, onClick, to }) => (
-  <motion.div
-    variants={itemVariants}
-    className="flex items-center gap-3 rounded-xl p-3 bg-transparent text-white hover:bg-white hover:text-purple-700 transition duration-200 cursor-pointer"
-    onClick={onClick}
-  >
-    {icon}
-    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      {onClick ? <button>{text}</button> : <Link to={to}>{text}</Link>}
-    </motion.span>
-  </motion.div>
-);
+const NavItem = ({ icon, text, onClick, to }) => {
+  const content = (
+    <>
+      {icon}
+      <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        {text}
+      </motion.span>
+    </>
+  );
+
+  return to ? (
+    <Link to={to}>
+      <motion.div
+        variants={itemVariants}
+        className="flex items-center gap-3 rounded-xl p-3 bg-transparent text-white hover:bg-white hover:text-purple-700 transition duration-200 cursor-pointer"
+      >
+        {content}
+      </motion.div>
+    </Link>
+  ) : (
+    <motion.div
+      variants={itemVariants}
+      className="flex items-center gap-3 rounded-xl p-3 bg-transparent text-white hover:bg-white hover:text-purple-700 transition duration-200 cursor-pointer"
+      onClick={onClick}
+    >
+      {content}
+    </motion.div>
+  );
+};
 
 export default SideBar;

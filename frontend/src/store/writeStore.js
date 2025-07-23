@@ -35,6 +35,7 @@ export const useWriteStore = create((set) => ({
             throw error;
         }
     },
+
     getUserBooks: async (userId) => {
         set({ isLoading: true, error: null });
         try {
@@ -51,29 +52,35 @@ export const useWriteStore = create((set) => ({
             throw error;
         }
     },
-    getBookById: async (id) => {
-        set({ isLoading: true, error: null });
-        try {
-            const response = await axios.get(`${API_URL}/book/${id}`);
-            const book = response.data.book;
-            set({
-                book,
-                isLoading: false,
-            });
-            return book;
-        } catch (error) {
-            set({
-                error: error.response?.data?.message || "Error retrieving book",
-                isLoading: false,
-            });
-            throw error;
-        }
+
+    getBookById: async (id, options = {}) => {
+    set({ isLoading: true, error: null });
+
+    const params = new URLSearchParams(options).toString();
+    const url = `${API_URL}/book/${id}${params ? `?${params}` : ''}`;
+
+    try {
+        const response = await axios.get(url);
+        const book = response.data.book;
+        set({
+        book,
+        isLoading: false,
+        });
+        return book;
+    } catch (error) {
+        set({
+        error: error.response?.data?.message || "Error retrieving book",
+        isLoading: false,
+        });
+        throw error;
+    }
     },
-    updateBook: async (id, { title, content }) => {
+
+    updateBook: async (id, updates) => {
         set({ isLoading: true, error: null });
 
         try {
-            const response = await axios.patch(`${API_URL}/update-book/${id}`, { title, content });
+            const response = await axios.patch(`${API_URL}/update-book/${id}`, updates);
 
             if (response.status === 200) {
                 set({
@@ -82,6 +89,7 @@ export const useWriteStore = create((set) => ({
                     message: "Book updated successfully",
                 });
                 console.log("Book updated successfully:", response.data.book);
+                return response.data.book; // 🔁 DEVUELVE el libro actualizado
             } else {
                 console.warn("Unexpected response status:", response.status);
                 set({ isLoading: false });
@@ -112,6 +120,7 @@ export const useWriteStore = create((set) => ({
             throw error;
         }
     },
+
     isAuthor: async (bookId) => {
         const currentUser = get().user;
         if (!currentUser) {
@@ -126,6 +135,7 @@ export const useWriteStore = create((set) => ({
             return false;
         }
     },
+
     getAllBooks: async () => {
         set({ isLoading: true, error: null });
         try {
@@ -143,6 +153,7 @@ export const useWriteStore = create((set) => ({
             throw error;
         }
     },
+
     deleteBook: async (bookId) => {
         set({ isLoading: true, error: null });
         try {
@@ -161,4 +172,24 @@ export const useWriteStore = create((set) => ({
             throw error;
         }
     },
+
+    publishBook: async (bookId) => {
+        set({isLoading: true, error: null});
+        try{
+            const response = await axios.patch(`${API_URL}/publish-book/${bookId}`);
+            set({
+                book: response.data.book,
+                isLoading: false,
+                message: response.data.book,
+            });
+            return response.data.book;
+        } catch (error) {
+            set({
+                error: error.response?.data?.message || "Error al publicar libro",
+                isLoading: false,
+            });
+            throw error;
+        }
+    }
+
 }))
