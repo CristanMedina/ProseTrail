@@ -1,4 +1,6 @@
 # Prose Trail
+<img width="1346" height="598" alt="image" src="https://github.com/user-attachments/assets/e6890192-0b7a-4171-8446-6ace659fbac1" />
+
 
 **Prose Trail** es una plataforma web para escribir y publicar historias cortas. Su objetivo es brindar una experiencia fluida y minimalista tanto para lectores como para escritores, con un enfoque en la escritura creativa y la simplicidad de uso.
 
