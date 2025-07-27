@@ -289,20 +289,19 @@ export const uploadCoverImage = async (req, res) => {
     }
 
     if (book.coverImage) {
-      const oldImagePath = path.join("public", "covers", book.coverImage);
+      const oldImagePath = path.join(process.cwd(), "frontend", "public", "covers", book.coverImage);
       if (fs.existsSync(oldImagePath)) {
         fs.unlinkSync(oldImagePath);
       }
     }
 
     book.coverImage = req.file.filename;
-
     await book.save();
 
     res.status(200).json({
       success: true,
       message: "Portada actualizada correctamente",
-      coverImage: book.coverImage,
+      coverImage: `/covers/${book.coverImage}`,
       book,
     });
   } catch (error) {

@@ -2,8 +2,11 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-const uploadDir = path.join("public", "covers");
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+const uploadDir = path.join(process.cwd(), "frontend", "public", "covers");
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -13,7 +16,7 @@ const storage = multer.diskStorage({
     const ext = path.extname(file.originalname);
     const uniqueName = `cover_${Date.now()}${ext}`;
     cb(null, uniqueName);
-  }
+  },
 });
 
 const fileFilter = (req, file, cb) => {

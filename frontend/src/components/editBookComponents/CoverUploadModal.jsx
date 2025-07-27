@@ -27,7 +27,8 @@ const CoverUploadModal = ({ bookId, isOpen, onClose, onUploaded }) => {
         }
       );
       toast.success("Portada actualizada.");
-      onUploaded(response.data.book);
+      // Ensures we receive and use the updated image path
+      onUploaded({ ...response.data.book, coverImage: response.data.coverImage });
       onClose();
     } catch (err) {
       toast.error("Error al subir la imagen.");
