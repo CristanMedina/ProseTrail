@@ -1,11 +1,8 @@
 import { motion } from "framer-motion";
 
 const BookCard = ({ book, onClick }) => {
-  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-  // Construir URL agregando 'covers/' delante del nombre del archivo
   const coverUrl = book.coverImage
-    ? `${baseUrl}/covers/${book.coverImage.replace(/\\/g, "/")}`
+    ? `/covers/${book.coverImage.replace(/\\/g, "/")}`
     : null;
 
   return (
@@ -37,7 +34,7 @@ const BookCard = ({ book, onClick }) => {
       <div className="mt-2 text-[10px] text-blue-700 space-y-1 bg-white bg-opacity-80 rounded-md p-1 max-h-24 overflow-auto">
         <p>
           <span className="font-semibold">Creado:</span>
-          <br />{" "}
+          <br />
           {new Date(book.createdAt).toLocaleDateString("es-MX", {
             year: "numeric",
             month: "long",
@@ -46,7 +43,7 @@ const BookCard = ({ book, onClick }) => {
         </p>
         <p>
           <span className="font-semibold">Actualizado:</span>
-          <br />{" "}
+          <br />
           {new Date(book.updatedAt).toLocaleDateString("es-MX", {
             year: "numeric",
             month: "long",
