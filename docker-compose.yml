@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: _
+      dockerfile: Dockerfile.frontend
+    container_name: prose-frontend
+    ports:
+     - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+  backend:
+    build:
+      context: _
+      dockerfile: Dockerfile.backend
+    container_name: prose-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    restart: always
