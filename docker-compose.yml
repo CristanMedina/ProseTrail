@@ -3,22 +3,29 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: _
+      context: .
       dockerfile: Dockerfile.frontend
     container_name: prose-frontend
     ports:
-     - "80:80"
+      - "80:80"
     depends_on:
       - backend
+    volumes:
+      - covers:/usr/share/nginx/html/covers
     restart: always
 
   backend:
     build:
-      context: _
+      context: .
       dockerfile: Dockerfile.backend
     container_name: prose-backend
     ports:
       - "5000:5000"
     env_file:
-      - .env
+      - ./backend/.env
+    volumes:
+      - covers:/app/frontend/public/covers
     restart: always
+
+volumes:
+  covers:

@@ -289,7 +289,7 @@ export const uploadCoverImage = async (req, res) => {
     }
 
     if (book.coverImage) {
-      const oldImagePath = path.join(process.cwd(), "frontend", "public", "covers", book.coverImage);
+      const oldImagePath = path.join("/app", "covers", book.coverImage);
       if (fs.existsSync(oldImagePath)) {
         fs.unlinkSync(oldImagePath);
       }

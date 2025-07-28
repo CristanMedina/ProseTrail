@@ -1,8 +1,16 @@
 import { useState, useEffect } from "react";
 import { motion, useAnimationControls } from "framer-motion";
-import { HomeIcon, SquarePenIcon, LibraryBigIcon, UserIcon, XIcon, MenuIcon, LogOutIcon } from "lucide-react";
+import {
+  HomeIcon,
+  SquarePenIcon,
+  LibraryBigIcon,
+  UserIcon,
+  XIcon,
+  MenuIcon,
+  LogOutIcon,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from "../store/authStore";
 
 const containerVariants = {
   close: {
@@ -44,17 +52,9 @@ const itemVariants = {
 const SideBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const containerControls = useAnimationControls();
-  const { logout, user } = useAuthStore();
+  const { logout, user, isAuthenticated } = useAuthStore();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log("Current user:", user);
-  }, [user]);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   useEffect(() => {
     if (isOpen) {
@@ -68,24 +68,25 @@ const SideBar = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleLogout = () => {
+    logout();
+  };
+
   const handleProfileNav = () => {
-    console.log("Navigating to profile. User:", user);
     if (user && user._id) {
       navigate(`/perfil/${user._id}`);
     } else {
-      console.error("User ID is not available");
-      navigate('/login');
+      navigate("/login");
     }
-  }
+  };
+
   const handleWritingNav = () => {
-    console.log("Navigating to writing. User:", user);
     if (user && user._id) {
       navigate(`/mis-libros/${user._id}`);
     } else {
-      console.error("User ID is not available");
-      navigate('/login');
+      navigate("/login");
     }
-  }
+  };
 
   return (
     <div>
@@ -96,16 +97,22 @@ const SideBar = () => {
         className="bg-gradient-to-b from-purple-600 to-indigo-700 flex flex-col z-10 p-3 fixed top-0 left-0 h-full shadow-lg"
       >
         <div className="flex justify-between items-center mb-8">
-          <button onClick={handleOpenClose} className="w-10 h-10 text-white hover:text-blue-300 transition-colors duration-200">
-          <motion.div
-            animate={{ rotate: isOpen ? 180 : 0 }}
-            transition={{ duration: 0.3 }}
+          <button
+            onClick={handleOpenClose}
+            className="w-10 h-10 text-white hover:text-blue-300 transition-colors duration-200"
           >
-            {isOpen ? <XIcon size={36} /> : <MenuIcon size={36} />}
-          </motion.div>
+            <motion.div
+              animate={{ rotate: isOpen ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {isOpen ? <XIcon size={36} /> : <MenuIcon size={36} />}
+            </motion.div>
           </button>
           {!isOpen && (
-            <Link to={`/`} className="font-cinzel font-bold text-2xl -rotate-90 whitespace-nowrap absolute left-[50%] top-[50%] transform -translate-x-1/2 -translate-y-1/2 text-white">
+            <Link
+              to={`/`}
+              className="font-cinzel font-bold text-2xl -rotate-90 whitespace-nowrap absolute left-[50%] top-[50%] transform -translate-x-1/2 -translate-y-1/2 text-white"
+            >
               Prose Trail
             </Link>
           )}
@@ -125,14 +132,47 @@ const SideBar = () => {
             }}
           >
             <div className="flex flex-col gap-4">
-              <NavItem icon={<HomeIcon size={20} />} text="Inicio" to={'/'}/>
-              <NavItem icon={<LibraryBigIcon size={20} />} text="Biblioteca" to="/biblioteca" />
-              <NavItem icon={<SquarePenIcon size={20} />} text="Escritura" onClick={handleWritingNav} />
+              <NavItem icon={<HomeIcon size={20} />} text="Inicio" to={"/"} />
+              <NavItem
+                icon={<LibraryBigIcon size={20} />}
+                text="Biblioteca"
+                to="/biblioteca"
+              />
+              <NavItem
+                icon={<SquarePenIcon size={20} />}
+                text="Escritura"
+                onClick={handleWritingNav}
+              />
             </div>
 
             <div className="flex flex-col gap-4 mb-4">
-              <NavItem icon={<UserIcon size={20} />} text="Perfil" onClick={handleProfileNav} />
-              <NavItem icon={<LogOutIcon size={20} />} text="Salir" onClick={handleLogout} />
+              {user && isAuthenticated ? (
+                <>
+                  <NavItem
+                    icon={<UserIcon size={20} />}
+                    text="Perfil"
+                    onClick={handleProfileNav}
+                  />
+                  <NavItem
+                    icon={<LogOutIcon size={20} />}
+                    text="Salir"
+                    onClick={handleLogout}
+                  />
+                </>
+              ) : (
+                <>
+                  <NavItem
+                    icon={<UserIcon size={20} />}
+                    text="Ingresar"
+                    to="/login"
+                  />
+                  <NavItem
+                    icon={<SquarePenIcon size={20} />}
+                    text="Registrarse"
+                    to="/signup"
+                  />
+                </>
+              )}
             </div>
           </motion.nav>
         )}
