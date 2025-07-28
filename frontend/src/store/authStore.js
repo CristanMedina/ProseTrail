@@ -17,15 +17,15 @@ export const useAuthStore = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await axios.post(`${API_URL}/signup`, { email, password, name });
-            set({ 
-                user: response.data.user, 
-                isAuthenticated: true, 
-                isLoading: false 
+            set({
+                user: response.data.user,
+                isAuthenticated: true,
+                isLoading: false
             });
         } catch (error) {
-            set({ 
-                error: error.response?.data?.message || "Error al crear cuenta", 
-                isLoading: false 
+            set({
+                error: error.response?.data?.message || "Error al crear cuenta",
+                isLoading: false
             });
             throw error;
         }
@@ -35,16 +35,16 @@ export const useAuthStore = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await axios.post(`${API_URL}/login`, { email, password});
-            set({ 
-                user: response.data.user, 
-                isAuthenticated: true, 
+            set({
+                user: response.data.user,
+                isAuthenticated: true,
                 error: null,
-                isLoading: false 
+                isLoading: false
             });
         } catch (error) {
-            set({ 
-                error: error.response?.data?.message || "Error al ingresar cuenta", 
-                isLoading: false 
+            set({
+                error: error.response?.data?.message || "Error al ingresar cuenta",
+                isLoading: false
             });
             throw error;
         }
@@ -54,16 +54,16 @@ export const useAuthStore = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             await axios.post(`${API_URL}/logout`);
-            set({ 
+            set({
                 user: null,
                 isAuthenticated: false,
                 isLoading: false,
                 error: null
             });
         } catch (error) {
-            set({ 
-                error: "Error al cerrar sesión", 
-                isLoading: false 
+            set({
+                error: "Error al cerrar sesión",
+                isLoading: false
             });
             throw error;
         }
@@ -73,16 +73,16 @@ export const useAuthStore = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await axios.post(`${API_URL}/verify-email`, { code });
-            set({ 
-                user: response.data.user, 
-                isAuthenticated: true, 
-                isLoading: false 
+            set({
+                user: response.data.user,
+                isAuthenticated: true,
+                isLoading: false
             });
             return response.data;
         } catch (error) {
-            set({ 
-                error: error.response?.data?.message || "Error al verificar codigo", 
-                isLoading: false 
+            set({
+                error: error.response?.data?.message || "Error al verificar codigo",
+                isLoading: false
             });
             throw error;
         }
