@@ -41,13 +41,14 @@ export const useWriteStore = create((set) => ({
         try {
             const response = await axios.get(`${API_URL}/user/${userId}/books`);
             set({
-                books: response.data.books,
+                books: response.data.books || [],
                 isLoading: false,
             });
         } catch (error) {
             set({
                 error: error.response?.data?.message || "Error al obtener libros",
                 isLoading: false,
+                books: [],
             });
             throw error;
         }
@@ -121,34 +122,20 @@ export const useWriteStore = create((set) => ({
         }
     },
 
-    isAuthor: async (bookId) => {
-        const currentUser = get().user;
-        if (!currentUser) {
-            return false;
-        }
-        try {
-            const response = await axios.get(`${API_URL}/book/${bookId}`);
-            const book = response.data.book;
-            return book.authorId === currentUser._id;
-        } catch (error) {
-            set({ error: "Error checking book author." });
-            return false;
-        }
-    },
-
     getAllBooks: async () => {
         set({ isLoading: true, error: null });
         try {
             const response = await axios.get(`${API_URL}/all-books`);
             set({
-                books: response.data.books,
+                books: response.data.books || [],
                 isLoading: false,
                 message: response.data.message
             });
         } catch (error) {
             set({
                 error: error.response?.data?.message || "Error al cargar libros",
-                isLoading: false
+                isLoading: false,
+                books: [],
             });
             throw error;
         }
@@ -190,6 +177,25 @@ export const useWriteStore = create((set) => ({
             });
             throw error;
         }
+    },
+
+    toggleLikeBook: async (bookId) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await axios.patch(`${API_URL}/like-book/${bookId}`);
+      set({
+        book: response.data.book,
+        isLoading: false,
+      });
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Error al procesar el like";
+      set({
+        isLoading: false,
+        error: errorMessage,
+      });
+      throw new Error(errorMessage);
     }
+  },
 
 }))

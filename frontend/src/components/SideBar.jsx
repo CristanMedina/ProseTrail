@@ -44,6 +44,11 @@ const SideBar = () => {
   const handleProfileNav = () => navigate(user?._id ? `/perfil/${user._id}` : "/login");
   const handleWritingNav = () => navigate(user?._id ? `/mis-libros/${user._id}` : "/login");
 
+  const handleNavClick = () => {
+    setIsOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <>
       <motion.nav
@@ -76,20 +81,20 @@ const SideBar = () => {
             variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
           >
             <div className="flex flex-col gap-4">
-              <NavItem icon={<HomeIcon size={20} />} text="Inicio" to={"/"} />
-              <NavItem icon={<LibraryBigIcon size={20} />} text="Biblioteca" to="/biblioteca" />
-              <NavItem icon={<SquarePenIcon size={20} />} text="Escritura" onClick={handleWritingNav} />
+              <NavItem icon={<HomeIcon size={20} />} text="Inicio" to={"/"} onNavClick={handleNavClick} />
+              <NavItem icon={<LibraryBigIcon size={20} />} text="Biblioteca" to="/biblioteca" onNavClick={handleNavClick} />
+              <NavItem icon={<SquarePenIcon size={20} />} text="Escritura" onClick={handleWritingNav} onNavClick={handleNavClick} />
             </div>
             <div className="flex flex-col gap-4 mb-4">
               {user && isAuthenticated ? (
                 <>
-                  <NavItem icon={<UserIcon size={20} />} text="Perfil" onClick={handleProfileNav} />
-                  <NavItem icon={<LogOutIcon size={20} />} text="Salir" onClick={handleLogout} />
+                  <NavItem icon={<UserIcon size={20} />} text="Perfil" onClick={handleProfileNav} onNavClick={handleNavClick} />
+                  <NavItem icon={<LogOutIcon size={20} />} text="Salir" onClick={handleLogout} onNavClick={handleNavClick} />
                 </>
               ) : (
                 <>
-                  <NavItem icon={<UserIcon size={20} />} text="Ingresar" to="/login" />
-                  <NavItem icon={<SquarePenIcon size={20} />} text="Registrarse" to="/signup" />
+                  <NavItem icon={<UserIcon size={20} />} text="Ingresar" to="/login" onNavClick={handleNavClick} />
+                  <NavItem icon={<SquarePenIcon size={20} />} text="Registrarse" to="/signup" onNavClick={handleNavClick} />
                 </>
               )}
             </div>
@@ -126,21 +131,21 @@ const SideBar = () => {
         </button>
 
         <div className="flex flex-col gap-4">
-          <NavItem icon={<HomeIcon size={20} />} text="Inicio" to={"/"} />
-          <NavItem icon={<LibraryBigIcon size={20} />} text="Biblioteca" to="/biblioteca" />
-          <NavItem icon={<SquarePenIcon size={20} />} text="Escritura" onClick={handleWritingNav} />
+          <NavItem icon={<HomeIcon size={20} />} text="Inicio" to={"/"} onNavClick={handleNavClick} />
+          <NavItem icon={<LibraryBigIcon size={20} />} text="Biblioteca" to="/biblioteca" onNavClick={handleNavClick} />
+          <NavItem icon={<SquarePenIcon size={20} />} text="Escritura" onClick={handleWritingNav} onNavClick={handleNavClick} />
         </div>
 
         <div className="flex flex-col gap-4 mt-8">
           {user && isAuthenticated ? (
             <>
-              <NavItem icon={<UserIcon size={20} />} text="Perfil" onClick={handleProfileNav} />
-              <NavItem icon={<LogOutIcon size={20} />} text="Salir" onClick={handleLogout} />
+              <NavItem icon={<UserIcon size={20} />} text="Perfil" onClick={handleProfileNav} onNavClick={handleNavClick} />
+              <NavItem icon={<LogOutIcon size={20} />} text="Salir" onClick={handleLogout} onNavClick={handleNavClick} />
             </>
           ) : (
             <>
-              <NavItem icon={<UserIcon size={20} />} text="Ingresar" to="/login" />
-              <NavItem icon={<SquarePenIcon size={20} />} text="Registrarse" to="/signup" />
+              <NavItem icon={<UserIcon size={20} />} text="Ingresar" to="/login" onNavClick={handleNavClick} />
+              <NavItem icon={<SquarePenIcon size={20} />} text="Registrarse" to="/signup" onNavClick={handleNavClick} />
             </>
           )}
         </div>
@@ -156,7 +161,7 @@ const SideBar = () => {
   );
 };
 
-const NavItem = ({ icon, text, onClick, to }) => {
+const NavItem = ({ icon, text, onClick, to, onNavClick }) => {
   const content = (
     <>
       {icon}
@@ -166,8 +171,13 @@ const NavItem = ({ icon, text, onClick, to }) => {
     </>
   );
 
+  const handleClick = () => {
+    if (onClick) onClick();
+    if (onNavClick) onNavClick();
+  };
+
   return to ? (
-    <Link to={to}>
+    <Link to={to} onClick={handleClick}>
       <motion.div
         variants={itemVariants}
         className="flex items-center gap-3 rounded-xl p-3 bg-transparent text-white hover:bg-white hover:text-purple-700 transition duration-200 cursor-pointer"
@@ -179,7 +189,7 @@ const NavItem = ({ icon, text, onClick, to }) => {
     <motion.div
       variants={itemVariants}
       className="flex items-center gap-3 rounded-xl p-3 bg-transparent text-white hover:bg-white hover:text-purple-700 transition duration-200 cursor-pointer"
-      onClick={onClick}
+      onClick={handleClick}
     >
       {content}
     </motion.div>

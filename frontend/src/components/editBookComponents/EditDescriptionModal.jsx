@@ -4,30 +4,25 @@ import toast from "react-hot-toast";
 import Modal from "../Modal";
 import { useWriteStore } from "../../store/writeStore";
 
-const GenreEditorModal = ({ book, isOpen, onClose }) => {
-  const [input, setInput] = useState(book.genres?.join(', ') || '');
+const EditDescriptionModal = ({ book, isOpen, onClose }) => {
+  const [input, setInput] = useState(book.description || '');
   const { updateBook } = useWriteStore();
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
-    const genres = input
-      .split(',')
-      .map(g => g.trim())
-      .filter(Boolean);
-
-    if (genres.length === 0) {
-      toast.error("Agrega al menos un género");
+    if (input === (book.description || '')) {
+      toast.error("No has realizado ningún cambio.");
       return;
     }
 
     setIsSaving(true);
     try {
-      await updateBook(book._id, { genres });
-      toast.success("Géneros actualizados");
+      await updateBook(book._id, { description: input });
+      toast.success("Descripción actualizada");
       onClose();
     } catch (error) {
-      console.error("Error al guardar géneros:", error);
-      toast.error("Hubo un error al guardar los géneros");
+      console.error("Error al guardar descripción:", error);
+      toast.error("Hubo un error al guardar la descripción");
     } finally {
       setIsSaving(false);
     }
@@ -36,21 +31,22 @@ const GenreEditorModal = ({ book, isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="space-y-4">
-        <h2 className="text-lg font-bold">Editar Géneros</h2>
-        <p className="text-sm text-gray-600">Escribe los géneros separados por comas (ej. Fantasía, Romance, Ciencia Ficción)</p>
+        <h2 className="text-lg font-bold">Editar Descripción</h2>
+        <p className="text-sm text-gray-600">Escribe la sinopsis de tu libro. Esto ayudará a los lectores a saber de qué trata tu historia.</p>
 
         <textarea
-          rows={3}
+          rows={6}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-          placeholder="Ejemplo: Fantasía, Misterio, Romance"
+          placeholder="Escribe aquí una breve sinopsis..."
         />
 
         <div className="flex justify-end space-x-3">
           <button
             className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
             onClick={onClose}
+            disabled={isSaving}
           >
             Cancelar
           </button>
@@ -69,4 +65,4 @@ const GenreEditorModal = ({ book, isOpen, onClose }) => {
   );
 };
 
-export default GenreEditorModal;
+export default EditDescriptionModal;

@@ -4,6 +4,7 @@ import BookCard from "../../components/BookCard";
 import { useWriteStore } from '../../store/writeStore';
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { motion } from "framer-motion";
+import BookInfoModal from "../../components/BookInfoModal";
 
 const LibraryPage = () => {
   const { books, getAllBooks } = useWriteStore();
@@ -11,6 +12,8 @@ const LibraryPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [selectedBook, setSelectedBook] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -25,14 +28,21 @@ const LibraryPage = () => {
     navigate(`/libro/${bookId}`);
   };
 
-  const filteredBooks = books?.filter(book => {
-  const search = searchTerm.toLowerCase();
-  const inTitle = book.title.toLowerCase().includes(search);
-  const inAuthor = book.author.toLowerCase().includes(search);
-  const inGenres = book.genres?.some(genre => genre.toLowerCase().includes(search));
-  return inTitle || inAuthor || inGenres;
-}) || [];
+  const handleInfoClick = (book) => {
+    setSelectedBook(book);
+  };
 
+  const handleCloseModal = () => {
+    setSelectedBook(null);
+  };
+
+  const filteredBooks = books?.filter(book => {
+    const search = searchTerm.toLowerCase();
+    const inTitle = book.title.toLowerCase().includes(search);
+    const inAuthor = book.author.toLowerCase().includes(search);
+    const inGenres = book.genres?.some(genre => genre.toLowerCase().includes(search));
+    return inTitle || inAuthor || inGenres;
+  }) || [];
 
   if (loading) return <LoadingSpinner />;
 
@@ -64,7 +74,7 @@ const LibraryPage = () => {
       >
         {filteredBooks.length === 0 ? (
           <div className="col-span-full text-center text-gray-500">
-            No se encontraron libros para "{searchTerm}"
+            No se encontraron libros para `{searchTerm}`
           </div>
         ) : (
           filteredBooks.map((book, index) => (
@@ -73,15 +83,22 @@ const LibraryPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              whileHover={{ scale: 1.05, y: -5 }}
-              className="cursor-pointer"
-              onClick={() => handleBookClick(book._id)}
             >
-              <BookCard book={book} />
+              <BookCard
+                book={book}
+                onClick={() => handleBookClick(book._id)}
+                onInfoClick={handleInfoClick}
+              />
             </motion.div>
           ))
         )}
       </motion.div>
+
+      <BookInfoModal
+        book={selectedBook}
+        isOpen={!!selectedBook}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };

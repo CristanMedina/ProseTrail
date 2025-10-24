@@ -16,7 +16,7 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/letsencrypt/live/prosetrail.com:/etc/letsencrypt/live/prosetrail.com:ro
       - /etc/letsencrypt/archive/prosetrail.com:/etc/letsencrypt/archive/prosetrail.com:ro
-
+      - covers:/usr/share/nginx/html/covers
   backend:
     build:
       context: .

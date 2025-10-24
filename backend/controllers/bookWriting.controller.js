@@ -288,7 +288,6 @@ export const uploadCoverImage = async (req, res) => {
       return res.status(404).json({ success: false, message: "Libro no encontrado" });
     }
 
-    // Delete old image if it exists
     if (book.coverImage) {
       const oldImagePath = path.join(process.cwd(), 'frontend/public/covers', book.coverImage);
       if (fs.existsSync(oldImagePath)) {
@@ -296,7 +295,6 @@ export const uploadCoverImage = async (req, res) => {
       }
     }
 
-    // Save new image filename in DB
     book.coverImage = req.file.filename;
     await book.save();
 
@@ -309,5 +307,40 @@ export const uploadCoverImage = async (req, res) => {
   } catch (error) {
     console.error("Error al subir portada:", error);
     res.status(500).json({ success: false, message: "Error al subir la portada" });
+  }
+};
+
+export const toggleLikeBook = async (req, res) => {
+  const { bookId } = req.params;
+  const userId = req.userId;
+
+  try {
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      logger.warn(`Intento de Like en libro no existente: ${bookId}`);
+      return res.status(404).json({ success: false, message: "Libro no encontrado" });
+    }
+
+    const isLiked = book.likes.includes(userId);
+
+    if (isLiked) {
+      await Book.updateOne({ _id: bookId }, { $pull: { likes: userId } });
+    } else {
+      await Book.updateOne({ _id: bookId }, { $addToSet: { likes: userId } });
+    }
+
+    const updatedBook = await Book.findById(bookId);
+
+    logger.info(`Like actualizado para libro: ${bookId} por usuario: ${userId}`);
+    return res.status(200).json({
+      success: true,
+      message: "Like actualizado",
+      book: updatedBook
+    });
+
+  } catch (error) {
+    logger.error(`Error al actualizar like: ${error.message}`);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

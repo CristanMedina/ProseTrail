@@ -1,14 +1,21 @@
 import { motion } from "framer-motion";
 
-const BookCard = ({ book, onClick }) => {
+const BookCard = ({ book, onClick, onInfoClick }) => {
   const coverUrl = book.coverImage
     ? `/covers/${book.coverImage.replace(/\\/g, "/")}`
     : null;
 
+  const handleInfoClick = (e) => {
+    e.stopPropagation();
+    if (onInfoClick) {
+      onInfoClick(book);
+    }
+  };
+
   return (
     <motion.div
       onClick={onClick}
-      className="w-48 h-64 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col justify-between"
+      className="w-48 h-64 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col justify-between relative"
       style={{
         backgroundImage: coverUrl ? `url(${coverUrl})` : undefined,
         backgroundSize: "cover",
@@ -19,6 +26,18 @@ const BookCard = ({ book, onClick }) => {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
+      {onInfoClick && (
+        <motion.button
+          onClick={handleInfoClick}
+          className="absolute top-2 right-2 z-10 w-6 h-6 bg-white bg-opacity-70 rounded-full flex items-center justify-center text-blue-800 shadow-md"
+          whileHover={{ scale: 1.2, backgroundColor: "rgba(255, 255, 255, 1)" }}
+          whileTap={{ scale: 0.9 }}
+          title="Ver más información"
+        >
+          <span className="font-bold text-sm italic">i</span>
+        </motion.button>
+      )}
+
       <div
         className="text-center bg-white bg-opacity-80 rounded-md p-1"
         style={{ backdropFilter: "blur(4px)" }}
