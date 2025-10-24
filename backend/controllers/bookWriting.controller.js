@@ -288,13 +288,15 @@ export const uploadCoverImage = async (req, res) => {
       return res.status(404).json({ success: false, message: "Libro no encontrado" });
     }
 
+    // Delete old image if it exists
     if (book.coverImage) {
-      const oldImagePath = path.join("/app", "covers", book.coverImage);
+      const oldImagePath = path.join(process.cwd(), 'frontend/public/covers', book.coverImage);
       if (fs.existsSync(oldImagePath)) {
         fs.unlinkSync(oldImagePath);
       }
     }
 
+    // Save new image filename in DB
     book.coverImage = req.file.filename;
     await book.save();
 

@@ -2,7 +2,6 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-// Save in shared Docker volume: /app/frontend/public/covers
 const uploadDir = path.join(process.cwd(), "frontend", "public", "covers");
 
 if (!fs.existsSync(uploadDir)) {
