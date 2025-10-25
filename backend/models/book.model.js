@@ -1,5 +1,22 @@
 import mongoose from "mongoose";
 
+const reviewSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  text: {
+    type: String,
+    required: true,
+    trim: true
+  }
+}, { timestamps: true });
+
 const bookSchema = new mongoose.Schema({
     title: {
         type:String,
@@ -22,11 +39,7 @@ const bookSchema = new mongoose.Schema({
         enum: ['Terminado', 'En progreso'],
         default: 'En progreso'
     },
-    reviews: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Review',
-        trim: true
-    },
+    reviews: [reviewSchema],
     likes: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -37,7 +50,7 @@ const bookSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    
+
     description: String,
     genres: [String],
     coverImage: String,

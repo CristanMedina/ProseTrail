@@ -198,4 +198,23 @@ export const useWriteStore = create((set) => ({
     }
   },
 
+  addComment: async (bookId, text) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await axios.patch(`${API_URL}/comment-book/${bookId}`, { text });
+      set({
+        book: response.data.book,
+        isLoading: false,
+      });
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Error al añadir comentario";
+      set({
+        isLoading: false,
+        error: errorMessage,
+      });
+      throw new Error(errorMessage);
+    }
+  },
+
 }))

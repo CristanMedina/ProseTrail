@@ -9,7 +9,8 @@ import {
   publishBook,
   updateBook,
   uploadCoverImage,
-  toggleLikeBook
+  toggleLikeBook,
+  commentBook,
 } from "../controllers/bookWriting.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -19,6 +20,7 @@ router.post('/create-book', verifyToken, createBook);
 router.patch('/update-book/:bookId', verifyToken, updateBook);
 router.patch('/publish-book/:bookId', verifyToken, publishBook);
 router.patch('/like-book/:bookId', verifyToken, toggleLikeBook);
+router.patch('/comment-book/:bookId', verifyToken, commentBook);
 router.patch('/upload-cover/:bookId', verifyToken, upload.single("cover"), uploadCoverImage);
 router.delete('/delete-book/:bookId', verifyToken, deleteBook);
 router.get('/user/:userId/books', verifyToken, getUserBooks);

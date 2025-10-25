@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useWriteStore } from '../../store/writeStore';
 import useDocumentTitle from '../../hooks/useDocumentTitle';
 import LikeButton from '../../components/LikeButton';
+import Comments from '../../components/Comments';
 
 const BookPage = () => {
   const { bookId } = useParams();
@@ -69,6 +70,8 @@ const BookPage = () => {
       >
         <div dangerouslySetInnerHTML={{ __html: book.content }}></div>
       </motion.div>
+
+      <Comments/>
     </div>
   );
 };

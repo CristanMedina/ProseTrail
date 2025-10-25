@@ -209,7 +209,7 @@ export const getBookById = async (req, res) => {
   const ip = req.ip;
 
   try {
-    const book = await Book.findById(bookId);
+    const book = await Book.findById(bookId).populate('reviews.user', 'name');
 
     if (!book) {
       logger.warn(`Libro no encontrado: ${bookId}`);
@@ -341,6 +341,51 @@ export const toggleLikeBook = async (req, res) => {
 
   } catch (error) {
     logger.error(`Error al actualizar like: ${error.message}`);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const commentBook = async (req, res) => {
+  const { bookId } = req.params;
+  const { text } = req.body;
+  const userId = req.userId;
+
+  if (!text || text.trim() === '') {
+    return res.status(400).json({ success: false, message: "El comentario no puede estar vacío" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    const comment = {
+      user: userId,
+      name: user.name,
+      text: text,
+    };
+
+    const updatedBook = await Book.findByIdAndUpdate(
+      bookId,
+      { $push: { reviews: { $each: [comment], $position: 0 } } },
+      { new: true }
+    ).populate('reviews.user', 'name');
+
+    if (!updatedBook) {
+      logger.warn(`Intento de comentar en libro no existente: ${bookId}`);
+      return res.status(404).json({ success: false, message: "Libro no encontrado" });
+    }
+
+    logger.info(`Comentario añadido a libro: ${bookId} por usuario: ${userId}`);
+    return res.status(201).json({
+      success: true,
+      message: "Comentario añadido",
+      book: updatedBook
+    });
+
+  } catch (error) {
+    logger.error(`Error al añadir comentario: ${error.message}`);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
