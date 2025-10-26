@@ -70,7 +70,10 @@ const Comments = () => {
       <div className="space-y-6">
         {book.reviews && book.reviews.length > 0 ? (
           book.reviews.map((review) => {
-            const isCommentAuthor = isAuthenticated && review.user.toString() === user._id;
+
+            const commentUserId = review.user?._id || review.user;
+
+            const isCommentAuthor = isAuthenticated && commentUserId.toString() === user._id;
             const isBookAuthor = isAuthenticated && book.author === user.name;
             const canDelete = isCommentAuthor || isBookAuthor;
 

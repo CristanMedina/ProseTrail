@@ -209,7 +209,7 @@ export const getBookById = async (req, res) => {
   const ip = req.ip;
 
   try {
-    const book = await Book.findById(bookId).populate('reviews.user', 'name');
+    const book = await Book.findById(bookId);
 
     if (!book) {
       logger.warn(`Libro no encontrado: ${bookId}`);
@@ -245,7 +245,7 @@ export const getBookById = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Libro obtenido con éxito",
-      book: { ...book._doc },
+      book: book,
     });
   } catch (error) {
     logger.error(`Error obteniendo libro: ${error.message}`);
@@ -370,7 +370,7 @@ export const commentBook = async (req, res) => {
       bookId,
       { $push: { reviews: { $each: [comment], $position: 0 } } },
       { new: true }
-    ).populate('reviews.user', 'name');
+    );
 
     if (!updatedBook) {
       logger.warn(`Intento de comentar en libro no existente: ${bookId}`);
