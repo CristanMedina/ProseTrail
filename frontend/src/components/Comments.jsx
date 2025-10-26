@@ -3,7 +3,7 @@ import { useWriteStore } from '../store/writeStore';
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-import { Send } from 'lucide-react';
+import { SendHorizonal } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Comments = () => {
@@ -51,7 +51,7 @@ const Comments = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Send size={18} />
+            <SendHorizonal size={18} />
           </motion.button>
         </form>
       )}
