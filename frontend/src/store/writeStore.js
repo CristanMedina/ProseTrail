@@ -217,4 +217,23 @@ export const useWriteStore = create((set) => ({
     }
   },
 
+  deleteComment: async (bookId, commentId) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await axios.patch(`${API_URL}/comment-book/${bookId}/delete/${commentId}`);
+      set({
+        book: response.data.book,
+        isLoading: false,
+      });
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Error al eliminar comentario";
+      set({
+        isLoading: false,
+        error: errorMessage,
+      });
+      throw new Error(errorMessage);
+    }
+  },
+
 }))

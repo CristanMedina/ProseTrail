@@ -389,3 +389,49 @@ export const commentBook = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const deleteComment = async (req, res) => {
+  const { bookId, commentId } = req.params;
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    const book = await Book.findById(bookId);
+
+    if (!user || !book) {
+      return res.status(404).json({ success: false, message: "Libro o usuario no encontrado" });
+    }
+
+    const comment = book.reviews.find(r => r._id.toString() === commentId);
+
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comentario no encontrado" });
+    }
+
+    const isCommentAuthor = comment.user.toString() === userId;
+    const isBookAuthor = book.author === user.name;
+
+    if (!isCommentAuthor && !isBookAuthor) {
+      logger.warn(`Intento no autorizado para borrar comentario: ${commentId} por usuario: ${userId}`);
+      return res.status(403).json({ success: false, message: "No autorizado para eliminar este comentario" });
+    }
+
+    await Book.updateOne(
+      { _id: bookId },
+      { $pull: { reviews: { _id: commentId } } }
+    );
+
+    const updatedBook = await Book.findById(bookId);
+
+    logger.info(`Comentario eliminado: ${commentId} por usuario: ${userId}`);
+    return res.status(200).json({
+      success: true,
+      message: "Comentario eliminado",
+      book: updatedBook
+    });
+
+  } catch (error) {
+    logger.error(`Error al eliminar comentario: ${error.message}`);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
