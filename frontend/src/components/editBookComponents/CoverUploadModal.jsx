@@ -19,7 +19,7 @@ const CoverUploadModal = ({ bookId, isOpen, onClose, onUploaded }) => {
     try {
       setUploading(true);
       const response = await axios.patch(
-        `http://54.151.42.16:5000/api/write/upload-cover/${bookId}`,
+        `/api/write/upload-cover/${bookId}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

@@ -245,7 +245,7 @@ export const getBookById = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Libro obtenido con éxito",
-      book: { ...book._doc },
+      book: book,
     });
   } catch (error) {
     logger.error(`Error obteniendo libro: ${error.message}`);
@@ -289,7 +289,7 @@ export const uploadCoverImage = async (req, res) => {
     }
 
     if (book.coverImage) {
-      const oldImagePath = path.join("/app", "covers", book.coverImage);
+      const oldImagePath = path.join(process.cwd(), 'frontend/public/covers', book.coverImage);
       if (fs.existsSync(oldImagePath)) {
         fs.unlinkSync(oldImagePath);
       }
@@ -307,5 +307,131 @@ export const uploadCoverImage = async (req, res) => {
   } catch (error) {
     console.error("Error al subir portada:", error);
     res.status(500).json({ success: false, message: "Error al subir la portada" });
+  }
+};
+
+export const toggleLikeBook = async (req, res) => {
+  const { bookId } = req.params;
+  const userId = req.userId;
+
+  try {
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      logger.warn(`Intento de Like en libro no existente: ${bookId}`);
+      return res.status(404).json({ success: false, message: "Libro no encontrado" });
+    }
+
+    const isLiked = book.likes.includes(userId);
+
+    if (isLiked) {
+      await Book.updateOne({ _id: bookId }, { $pull: { likes: userId } });
+    } else {
+      await Book.updateOne({ _id: bookId }, { $addToSet: { likes: userId } });
+    }
+
+    const updatedBook = await Book.findById(bookId);
+
+    logger.info(`Like actualizado para libro: ${bookId} por usuario: ${userId}`);
+    return res.status(200).json({
+      success: true,
+      message: "Like actualizado",
+      book: updatedBook
+    });
+
+  } catch (error) {
+    logger.error(`Error al actualizar like: ${error.message}`);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const commentBook = async (req, res) => {
+  const { bookId } = req.params;
+  const { text } = req.body;
+  const userId = req.userId;
+
+  if (!text || text.trim() === '') {
+    return res.status(400).json({ success: false, message: "El comentario no puede estar vacío" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    const comment = {
+      user: userId,
+      name: user.name,
+      text: text,
+    };
+
+    const updatedBook = await Book.findByIdAndUpdate(
+      bookId,
+      { $push: { reviews: { $each: [comment], $position: 0 } } },
+      { new: true }
+    );
+
+    if (!updatedBook) {
+      logger.warn(`Intento de comentar en libro no existente: ${bookId}`);
+      return res.status(404).json({ success: false, message: "Libro no encontrado" });
+    }
+
+    logger.info(`Comentario añadido a libro: ${bookId} por usuario: ${userId}`);
+    return res.status(201).json({
+      success: true,
+      message: "Comentario añadido",
+      book: updatedBook
+    });
+
+  } catch (error) {
+    logger.error(`Error al añadir comentario: ${error.message}`);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteComment = async (req, res) => {
+  const { bookId, commentId } = req.params;
+  const userId = req.userId;
+
+  try {
+    const user = await User.findById(userId);
+    const book = await Book.findById(bookId);
+
+    if (!user || !book) {
+      return res.status(404).json({ success: false, message: "Libro o usuario no encontrado" });
+    }
+
+    const comment = book.reviews.find(r => r._id.toString() === commentId);
+
+    if (!comment) {
+      return res.status(404).json({ success: false, message: "Comentario no encontrado" });
+    }
+
+    const isCommentAuthor = comment.user.toString() === userId;
+    const isBookAuthor = book.author === user.name;
+
+    if (!isCommentAuthor && !isBookAuthor) {
+      logger.warn(`Intento no autorizado para borrar comentario: ${commentId} por usuario: ${userId}`);
+      return res.status(403).json({ success: false, message: "No autorizado para eliminar este comentario" });
+    }
+
+    await Book.updateOne(
+      { _id: bookId },
+      { $pull: { reviews: { _id: commentId } } }
+    );
+
+    const updatedBook = await Book.findById(bookId);
+
+    logger.info(`Comentario eliminado: ${commentId} por usuario: ${userId}`);
+    return res.status(200).json({
+      success: true,
+      message: "Comentario eliminado",
+      book: updatedBook
+    });
+
+  } catch (error) {
+    logger.error(`Error al eliminar comentario: ${error.message}`);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

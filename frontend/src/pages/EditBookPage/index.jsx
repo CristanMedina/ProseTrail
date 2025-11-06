@@ -11,6 +11,7 @@ import DeleteBookButton from '../../components/editBookComponents/DeleteBookButt
 import TogglePublishButton from '../../components/editBookComponents/TogglePublishButton';
 import GenreEditorModal from '../../components/editBookComponents/GenreEditorModal';
 import CoverUploadModal from '../../components/editBookComponents/CoverUploadModal';
+import EditDescriptionModal from '../../components/editBookComponents/EditDescriptionModal';
 
 import { useWriteStore } from '../../store/writeStore';
 
@@ -22,6 +23,7 @@ const EditBookPage = () => {
   const [book, setBook] = useState(null);
   const [isGenreModalOpen, setIsGenreModalOpen] = useState(false);
   const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
 
   const { title, editor, statusMessage, handleTitleChange } = useBookEditor(id);
 
@@ -88,6 +90,13 @@ const EditBookPage = () => {
             >
               Cambiar Portada
             </button>
+
+            <button
+                onClick={() => setIsDescriptionModalOpen(true) }
+                className="px-4 py-2 bg-slate-500 text-white rounded hover:bg-slate-600 transition duration-200 font-semibold w-fit"
+            >
+                Editar Descripción
+            </button>
           </div>
         )}
 
@@ -110,6 +119,15 @@ const EditBookPage = () => {
               isOpen={isCoverModalOpen}
               onClose={() => setIsCoverModalOpen(false)}
               onUploaded={refreshBook}
+            />
+
+            <EditDescriptionModal
+                book={book}
+                isOpen={isDescriptionModalOpen}
+                onClose={() => {
+                  setIsDescriptionModalOpen(false);
+                  refreshBook();
+                }}
             />
           </>
         )}
